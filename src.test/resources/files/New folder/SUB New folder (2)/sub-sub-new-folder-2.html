@@ -1,0 +1,75 @@
+<!doctype html>
+<html>
+
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+    <link rel="stylesheet" type="text/css" href="sanwaf-ui-demo.css" media="screen" />  
+
+    <!-- Sanwaf-ui code - 1. import sanwaf-ui.js -->
+    <script src="sanwaf-ui.js"></script>
+
+    <!-- Sanwaf-ui code - 2. import sanwaf-ui.css (optional) -->
+    <link rel="stylesheet" type="text/css" href="sanwaf-ui.css" media="screen" />  
+    
+    <!-- Sanwaf-ui test code - use custom css & classes see <div id="sanwafUiConfig" .../> for how to override classes-->
+    <link rel="stylesheet" type="text/css" href="custom.css" media="screen" />  
+
+    <style> 
+      * { Background : #322f2f; color: #d3d0d0;font-family: Arial; } 
+      body { font-size: 1em; }
+    </style> 
+  </head>
+
+  <body>
+    <form id="datatypes" method="post" action="./someEndPoint" onsubmit="sanwafui()">
+      <table class="table-compact-normal-font">
+        <tr>
+          <td><b>Data Type</b></td>
+          <td><b>Input</b></td>
+        </tr>
+        <tr>
+          <td><label for="char">Character (c)</label></td>
+          <td><input type="text" id="char" size="1" data-sw-display="char" data-sw-type="c" /></td>
+          <td>&nbsp;&nbsp;Only a single character allowed</td>
+        </tr>
+        <tr>
+          <td><label for="numeric">Numeric (n)</label></td>
+          <td><input type="text" id="numeric" size="20" data-sw-display="numeric" data-sw-type="n" /></td>
+          <td>&nbsp;&nbsp;Only numeric values allowed</td>
+        </tr>
+        <tr>
+          <td><label for="numericdelimited">Numeric Delimited (n){ , }</label></td>
+          <td><input type="text" id="numericdelimited" size="20" data-sw-display="numericdelimited" data-sw-type="n{,}" /></td>
+          <td>&nbsp;&nbsp;Only numeric values delimited by a "," allowed</td>
+        </tr>
+        <tr>
+          <td><label for="alphanumeric">Alphanumeric (a)</label></td>
+          <td><input type="text" id="alphanumeric" size="20" data-sw-display="alphanumeric" data-sw-type="a" /></td>
+          <td>&nbsp;&nbsp;Only alphanumeric values allowed</td>
+        </tr>
+        <tr>
+          <td><label for="alphanumericandmore">Alphanumeric And More (a{ <b>' \s ! </b>})</label></td>
+          <td><input type="text" id="alphanumericandmore" size="20" data-sw-display="alphanumericandmore" data-sw-type="a{'\s!}" /></td>
+          <td>&nbsp;&nbsp;Only alphanumeric and additional characters: [space] "!", "'" allowed</td>
+        </tr>
+        <tr>
+          <td><label for="constant">Constant (k{ y, n })</label></td>
+          <td><input type="text" id="constant" size="20" data-sw-display="constant" data-sw-type="k{y,n}" /></td>
+          <td>&nbsp;&nbsp;Only the values: "y", "n" allowed</td>
+        </tr>
+        <tr>
+          <td><label for="regex">Regex (r{ ^[^\s@]+@[^\s@]+$ })</label></td>
+          <td><input type="text" id="regex"  size="20" data-sw-display="regex" data-sw-type="r{^[^\s@]+@[^\s@]+$}" data-sw-err-msg="Must be a proper email address"/></td>
+          <td>&nbsp;&nbsp;Only a proper email address allowed</td>
+        </tr>
+        <tr>
+          <td></td><td><input type="button" value="Validate" onClick="return isSanwafUiFormValid(datatypes)"/></td><td></td>
+        </tr>
+      </table>
+    </form>
+    
+  </body>
+</html>

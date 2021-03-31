@@ -1,0 +1,128 @@
+<!doctype html>
+<html>
+
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+    <link rel="stylesheet" type="text/css" href="sanwaf-ui-demo.css" media="screen" />  
+
+    <!-- Sanwaf-ui code - 1. import sanwaf-ui.js -->
+    <script src="sanwaf-ui.js"></script>
+
+    <!-- Sanwaf-ui code - 2. import sanwaf-ui.css (optional) -->
+    <link rel="stylesheet" type="text/css" href="sanwaf-ui.css" media="screen" />  
+    
+    <!-- Sanwaf-ui test code - use custom css & classes see <div id="sanwafUiConfig" .../> for how to override classes-->
+    <link rel="stylesheet" type="text/css" href="custom.css" media="screen" />  
+
+    <style> 
+      * { Background : #322f2f; color: #d3d0d0;font-family: Arial; } 
+      body { font-size: 1em; }
+    </style> 
+  </head>
+
+  <body>
+  
+  <select id='list'>
+  	<option value='0'>First value</option>
+  	<option value='1'>Second value</option>
+  	<option value='2'>Third value</option>
+  </select>
+  
+  
+    <table class="table-instructions-inline-block">
+      <tr><td>For complex relationships, encapsulate the 2 part format with parenthesis's "( RelatedToElementPart <b>:</b> RelationshipSpecificationPart )" and specify the &amp;&amp; and/or the || operators</td><td></td></tr>
+      <tr><td>For example: &nbsp;&nbsp;</td><td>data-sw-type="( element1 <b>:</b> value1 || value2 ) || ( element2 <b>:</b> value1 || value2 ) &amp;&amp; ( element3 <b>:</b> value1 || value2 )..."</td></tr>
+      <tr><td>&nbsp;</td><td></td></tr>
+      <tr><td><b>Test a few relationships</b></td><td></td></tr>
+      <tr>
+        <td>
+          <form id="reldemopassword" method="post" action="./someEndPoint" onsubmit="sanwafui()">
+            Password must equal each other
+            <br/>
+            Set the attribute <b>data-sw-related="pass1:="</b> on pass2 (confirm password)
+            <table class="table-compact-normal-font">
+              <tr>
+                <td><label for="pass1">Password</label></td>
+                <td><input type="password" id="pass1" size="20" data-sw-display="Password" data-sw-type="s" data-sw-min="4" data-sw-max="10"/></td>
+                <td><label for="pass2">Confirm Password</label></td>
+                <td><input type="password" id="pass2" size="20" data-sw-display="Confirm Password" data-sw-type="s" data-sw-related="pass1:=" data-sw-min="4" data-sw-max="10" />  <input type="button" value="Validate" onClick="return isSanwafUiFormValid(reldemopassword)"/></td>
+              </tr>
+            </table>
+          </form>
+        </td>
+        <td></td>
+      </tr>
+
+      <tr>
+        <td>
+        <br/>
+          <form id="reldemoEqualValue" method="post" action="./someEndPoint" onsubmit="sanwafui()">
+            If you have food allergies, you need to enter what foods you're are allergic to
+            <br/>
+            Set the attribute <b>data-sw-related="allergies:Yes"</b> on the foodsAllergicTo element
+            <table class="table-compact-normal-font">
+              <tr>
+                <td><label for="allergies">Do you have food allergies</label></td>
+                <td><select size="1" id="allergies"><option value="Yes">Yes</option><option value="No">No</option></select></td>
+                <td><label for="foodsallergicto">foods allergic to</label></td>
+                <td><input type="text" id="foodsallergicto" data-sw-display="Foods allergic to" data-sw-type="s" data-sw-max="30" data-sw-min="0" data-sw-related="allergies:Yes"/> <input type="button" value="Validate" onClick="return isSanwafUiFormValid(reldemoEqualValue)"/></td>
+              </tr>
+            </table>
+          </form>
+        </td>
+        <td></td>
+       </tr>
+
+       <tr>
+          <td>
+          <br/>
+          <form id="reldemoOrCondition" method="post" action="./someEndPoint" onsubmit="sanwafui()">
+            If you have an element that needs data based on 2 items
+            <br/>
+            set the attribute <b>data-sw-related="(jog:Yes)||(weights:Yes)"</b> on the duration element
+            <table class="table-compact-normal-font">
+              <tr>
+                <td><label for="jog">Do you jog</label></td>
+                <td><select size="1" id="jog"><option value="Yes">Yes</option><option value="No">No</option></select></td>
+                <td><label for="weights">Lift weights</label></td>
+                <td><select size="1" id="weights"><option value="Yes">Yes</option><option value="No">No</option></select></td>
+                <td><label for="duration">Duration Exersizing</label></td>
+                <td><input type="text" id="duration" data-sw-display="Duration of all exersizes" data-sw-type="s" data-sw-max="30" data-sw-min="0" data-sw-related="(jog:Yes)||(weights:Yes)"/></td>
+                <td></td><td><input type="button" value="Validate" onClick="return isSanwafUiFormValid(reldemoOrCondition)"/></td><td></td>
+              </tr>
+            </table>
+          </form>
+        </td>
+        <td></td>
+      </tr>
+
+       <tr>
+          <td>
+          <br/>
+          <form id="reldemoOrOrAndCondition" method="post" action="./someEndPoint" onsubmit="sanwafui()">
+            If you have an element that needs data based on 2 items
+            <br/>
+            set the attribute <b>data-sw-related="(sports:true)||(music:true)&amp;&amp;(hobby:true)"</b> on the duration element
+            <table class="table-compact-normal-font">
+              <tr>
+                <td>
+                <input type="checkbox" id="hobby"/><label for="hobby">hobbies:</label>,&nbsp;&nbsp;
+                <input type="checkbox" id="sports"/><label for="sports">Sports</label>,&nbsp;&nbsp;
+                <input type="checkbox" id="music"/><label for="music">Music</label>,&nbsp;&nbsp;
+                <label for="duration1">Duration</label><input type="text" id="duration1" data-sw-display="Duration" data-sw-type="n" data-sw-related="(sports:true)||(music:true)&&(hobby:true)"/>&nbsp;&nbsp;
+                <input type="button" value="Validate" onClick="return isSanwafUiFormValid(reldemoOrOrAndCondition)"/>
+                </td>
+              </tr>
+            </table>
+          </form>
+          </td>
+          <td></td>
+       </tr>
+    </table>
+
+    
+  </body>
+</html>
