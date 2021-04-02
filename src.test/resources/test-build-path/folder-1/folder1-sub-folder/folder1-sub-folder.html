@@ -1,0 +1,102 @@
+<!doctype html>
+<html>
+
+    
+  <body>
+    <h1 id="top" style="text-align: center;">Sanwaf-ui.js Demo</h1>
+    <h2 id="whatissanwaf">What is Sanwaf &amp; Sanwaf-ui?</h2>
+    <table class="table-instructions">
+      <tr><td>Sanwaf is a Sanitation Web Application Firewall. Sanwaf runs on the server</td></tr>
+      <tr><td>Sanwaf-ui is a Sanitation Web Application Firewall that runs on the browser</td></tr>
+      <tr><td>Sanwaf &amp; Sanwaf-ui can be used independently or together</td></tr>
+      <tr><td>when used together, they provide a code-free validation system on both the client &amp; server</td></tr>
+      <tr><td></td></tr>
+    </table>
+    <img src="sanwaf-ui.png" class="image"> 
+    <br/>
+    <br/>
+    <h2>Sample Form</h2>
+    
+    <!-- Sanwaf-ui code - uses the default values from the sanwafuiconfig hiddent element for wrapper & error table -->
+    <div id="sanwafuierrorwrapper" style="display: none;">
+      <b>Uses Default Value</b>
+      <div id="sanwafuierrortable"></div>
+      <input type="button" value="hide errors" onclick="document.getElementById('sanwafuierrorwrapper').style.display='none';"/>
+    </div>
+    
+    <!-- Sanwaf-ui code - override default values in sanwafuiconfig hiddent element (attributes: showOnPageElementId & showOnPageSanwafTableElementId) -->
+    <div id="pageErrors" style="display: none;">
+      <b>Some Heading</b>
+      <div id="sanwafUiErrors"></div>
+      <input type="button" value="hide errors" onclick="document.getElementById('pageErrors').style.display='none';"/>
+    </div>
+    
+    <form id="testform" method="post" action="./someEndPoint" onsubmit="sanwafui()">
+      <table class="table-instructions">
+        <tr>
+          <td><b>Item</b></td>
+          <td><b>Input</b></td>
+          <td><b>Description</b></td>
+        </tr>
+        <tr>
+          <td><label for="telephone">Telephone number</label></td>  
+          <!-- Sanwaf-ui code - 4. add sanwaf attributes (data-sw*) to configure elements;  -->
+          <td><input type="text" id="telephone" size="20" data-sw-display="Telephone Number" data-sw-type="s" data-sw-req="true" data-sw-format="(###) ###-####" /></td>
+          <td>Required. Format: "(###) ###-####"</td>
+        </tr>
+        <tr>
+          <td><label for="postalcode">Postal Code</label></td>  
+          <td><input type="text" id="postalcode" size="20" data-sw-display="Postal Code" data-sw-type="s" data-sw-req="true" data-sw-format="A#A #A#"  /></td>
+          <td>Required. format: "A#A #A#"</td>
+        </tr>
+        <tr>
+          <td><label for="areacode">Area Code</label></td>
+          <td><input type="text" id="areacode" size="20" data-sw-display="Area Code" data-sw-type="s" data-sw-fixed-format="(###)" /></td>
+          <td>Absolute format: "(###)"</td>
+        </tr>
+        <tr>
+          <td><label for="pwd1">Password</label></td>
+          <td><input type="password" id="pwd1" size="20" data-sw-display="Password" data-sw-type="s" data-sw-max="10" data-sw-min="4" /></td>
+          <td>Max = 10 chars, Min = 4 chars. If entered, confirm password must have the same value</td>
+        </tr>
+        <tr>
+          <td><label for="confirmPassword">Confirm Password</label></td>
+          <td><input type="password" id="confirmPassword" size="20" data-sw-display="Confirm Password" data-sw-type="s" data-sw-related="pwd1:=" data-sw-max="10" data-sw-min="4" /></td>
+          <td>Max = 10 chars, Min = 4 chars. Required only if above field entered</td>
+        </tr>
+        <tr>
+          <td><label for="haveCar">Do you own a car?</label></td>
+          <td><select size="1" id="haveCar" ><option value="Yes">Yes</option><option value="No">No</option></select></td>
+          <td>If value selected = &quot;yes&quot; Car Model must be entered</td>
+        </tr>
+        <tr>
+          <td><label for="carModel">Car Model</label></td>
+          <td><input type="text" id="carModel" size="20" data-sw-display="Car Model" data-sw-type="s" data-sw-max="30" data-sw-min="0" data-sw-related="haveCar:Yes" data-sw-err-msg="Must be entered if you own a car" /></td>
+          <td>If car model =  &quot;yes&quot;, this element is required</td>
+        </tr>
+        <tr>
+          <td><label for="visa">Visa number</label></td>
+          <td><input type="text" id="visa" size="20" data-sw-display="Visa Number" data-sw-type="n" data-sw-max="16" data-sw-min="16" data-sw-err-msg="Must be Numeric and expiry must be supplied" /></td>
+          <td>must be 16 numeric digits</td>
+        </tr>
+        <tr>
+          <td><label for="visaExpirationDate">Expiry</label></td>
+          <td><input type="text" id="visaExpirationDate" size="20" data-sw-display="Expiry" data-sw-type="n" data-sw-related="visa" data-sw-max="4" data-sw-min="4" data-sw-err-msg="Must be 4 digits" /></td>
+          <td>Must be 4 digits.  Required if Visa number is entered</td>
+        </tr>
+        <tr>
+          <td><label for="amount">Purchase Amount</label></td>
+          <td><input type="text" id="amount" size="20" data-sw-display="Purchase Amount" data-sw-type="n" data-sw-max-value="1000" data-sw-min-value="10" /></td>
+          <td>Must be numeric value between 10-1000 </td>
+        </tr>
+        <tr>
+          <td><label for="stateprov">State/Province</label></td>
+          <td><input type="text" id="stateprov" size="20" data-sw-display="Province/State" data-sw-type="s" data-sw-max="3" data-sw-min="1" data-sw-req="true" /></td>
+          <td>Required. Must be 3 characters&nbsp;</td>
+        </tr>
+        <!-- Sanwaf-ui code - 5. call sanwaf-ui to validate form: isSanwafUiFormValid(testform)  -->
+        <tr><td></td><td><input type="button" value="Validate" onClick="return isSanwafUiFormValid(testform)"/></td><td></td></tr>
+      </table>
+    </form>
+  </body>
+</html>

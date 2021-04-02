@@ -31,6 +31,7 @@
   	<option value='2'>Third value</option>
   </select>
   
+   <input type="text" name="somename" id="someid" size="20" data-sw-display="somename" data-sw-type="s" data-sw-min="4" data-sw-max="10"/>
   
     <table class="table-instructions-inline-block">
       <tr><td>For complex relationships, encapsulate the 2 part format with parenthesis's "( RelatedToElementPart <b>:</b> RelationshipSpecificationPart )" and specify the &amp;&amp; and/or the || operators</td><td></td></tr>
@@ -66,7 +67,7 @@
             <table class="table-compact-normal-font">
               <tr>
                 <td><label for="allergies">Do you have food allergies</label></td>
-                <td><select size="1" id="allergies"><option value="Yes">Yes</option><option value="No">No</option></select></td>
+                <td><select size="1" id="allergies" data-sw-type="s"><option value="Yes">Yes</option><option value="No">No</option></select></td>
                 <td><label for="foodsallergicto">foods allergic to</label></td>
                 <td><input type="text" id="foodsallergicto" data-sw-display="Foods allergic to" data-sw-type="s" data-sw-max="30" data-sw-min="0" data-sw-related="allergies:Yes"/> <input type="button" value="Validate" onClick="return isSanwafUiFormValid(reldemoEqualValue)"/></td>
               </tr>
