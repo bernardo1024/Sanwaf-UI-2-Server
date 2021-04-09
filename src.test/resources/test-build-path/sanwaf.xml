@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+
+<sanwaf>
+	<global-settings>
+		<enabled>true</enabled>
+		<verbose>true</verbose>
+		<app.version>=${Your_Application_Release_Version}</app.version>
+
+		<errorHandling>
+			<provideTrackId>true</provideTrackId>
+			<provideErrors>true</provideErrors>
+		</errorHandling>
+
+		<errorMessages>
+			<char><![CDATA[ <b>Only a single character is permitted.</b>&nbsp;<i>For example: <b>a</b></i>]]></char>
+			<numeric><![CDATA[ <b>Only numeric values are permitted.</b>&nbsp;<i>For example: <b>-123.456</b></i>]]></numeric>
+			<numericDelimited><![CDATA[ <b>Only numeric values and numeric values separated by &quot;{0}&quot; are permitted.</b>&nbsp;<i>For example: <b>123,-123,123.456</b></i>]]></numericDelimited>
+			<alphanumeric><![CDATA[ <b>Only alphanumeric characters are permitted.</b>&nbsp;<i>For example: <b>abc123</b></i>]]></alphanumeric>
+			<alphanumericAndMore><![CDATA[ <b>Only alphanumeric characters and special characters: <i>{0}</i> are permitted.</b>&nbsp;<i>For example: <b>abc123{0}</b></i>]]></alphanumericAndMore>
+			<constant><![CDATA[ <b>Invalid value provided,</b>&nbsp;<i>value must be one of: <b>{0}</b></i>]]></constant>
+			<string><![CDATA[ <b>Invalid text provided.</b>&nbsp;<i>Recommended Correction: Add a space before any special characters, such as: <b>&nbsp;&lt;&nbsp;&gt;&nbsp;:</b></i>]]></string>
+			<regex><![CDATA[ Invalid value provided, please try again.]]></regex>
+			<java><![CDATA[ Invalid value provided.]]></java>
+		</errorMessages>
+	</global-settings>
+
+	<shields>
+		<shield>
+			<shield-settings>
+				<name>XSS</name>
+				<minLen>0</minLen>
+				<maxLen>-1</maxLen>
+				<child></child>
+			</shield-settings>
+
+			<regex-config>
+				<minLen>3</minLen>
+				<alwaysPerformRegex>
+					<enabled>false</enabled>
+					<exclusions>
+						<item></item>
+					</exclusions>
+				</alwaysPerformRegex>
+				<autoRunPatterns>
+					<item><key>javascriptExpression</key> <value><![CDATA[(?:(?:(?:^)|(?:=|"|'|(?:%(?:2[27]|3D))))|(?:\s|%20)+)(?:(?:j|%[46]a)(?:(?:&|%26)(?:.)*?(?:;|%3b))*?(?:a|%[46]1)(?:(?:&|%26)(?:.)*?(?:;|%3b))*?(?:v|%[57]6)(?:(?:&|%26)(?:.)*?(?:;|%3b))*?(?:a|%[46]1)(?:(?:&|%26)(?:.)*?(?:;|%3b))*?(?:s|%[57]3)(?:(?:&|%26)(?:.)*?(?:;|%3b))*?(?:c|%[46]3)(?:(?:&|%26)(?:.)*?(?:;|%3b))*?(?:r|%[57]2)(?:(?:&|%26)(?:.)*?(?:;|%3b))*?(?:i|%[46]9)(?:(?:&|%26)(?:.)*?(?:;|%3b))*?(?:p|%[57]0)(?:(?:&|%26)(?:.)*?(?:;|%3b))*?(?:t|%[57]4)(?:(?:&|%26)(?:.)*?(?:;|%3b))*?(?:\:|%3a)|(?:v|%[57]6)(?:b|%[46]2)(?:s|%[57]3)(?:c|%[46]3)(?:r|%[57]2)(?:i|%[46]9)(?:p|%[57]0)(?:t|%[57]4)|(?:e|%[64]5)(?:(?:\/|%2f)(?:\*|%2a).*?(?:\*|%2a)(?:\/|%2f))*?(?:x|%[75]8)(?:(?:\/|%2f)(?:\*|%2a).*?(?:\*|%2a)(?:\/|%2f))*?(?:p|%[75]0)(?:(?:\/|%2f)(?:\*|%2a).*?(?:\*|%2a)(?:\/|%2f))*?(?:r|%[75]2)(?:(?:\/|%2f)(?:\*|%2a).*?(?:\*|%2a)(?:\/|%2f))*?(?:e|%[64]5)(?:(?:\/|%2f)(?:\*|%2a).*?(?:\*|%2a)(?:\/|%2f))*?(?:s|%[75]3)(?:(?:\/|%2f)(?:\*|%2a).*?(?:\*|%2a)(?:\/|%2f))*?(?:s|%[75]3)(?:(?:\/|%2f)(?:\*|%2a).*?(?:\*|%2a)(?:\/|%2f))*?(?:i|%[64]9)(?:(?:\/|%2f)(?:\*|%2a).*?(?:\*|%2a)(?:\/|%2f))*?(?:o|%[64]f)(?:(?:\/|%2f)(?:\*|%2a).*?(?:\*|%2a)(?:\/|%2f))*?(?:n|%[64]e)(?:\(|%28))]]></value></item>
+					<item><key>xss-form-elements</key> <value><![CDATA[(?:(?:<|(?:\\|%5C)(?:0|(?:%30)){0,1}(?:7|%37)(?:4|%34)|(?:%|(?:\\|%5C)(?:(?:x|%[75]8)|(?:(?:(?:u)|(?:%)[75]5)(?:0|(?:%30)){2})))3c)|(?:<|(?:\\|%5C)(?:0|(?:%30)){0,1}(?:7|%37)(?:4|%34)|(?:%|(?:\\|%5C)(?:(?:x|%[75]8)|(?:(?:(?:u)|(?:%)[75]5)(?:0|(?:%30)){2})))3c)(?:\/|(?:\\|%5C)(?:0|(?:%30)){0,1}(?:5|%35)(?:7|%37)|(?:%|(?:\\|%5C)(?:(?:x|%[75]8)|(?:(?:(?:u)|(?:%)[75]5)(?:0|(?:%30)){2})))2f))(?:[^\s\/]{1}.+)(?:>|(?:\\|%5C)(?:0|(?:%30)){0,1}(?:7|%37)(?:6|%36)|(?:%|(?:\\|%5C)(?:(?:x|%[75]8)|(?:(?:(?:u)|(?:%)[75]5)(?:0|(?:%30)){2})))3e)]]></value></item>
+				</autoRunPatterns>
+
+				<customPatterns>
+				</customPatterns>
+			</regex-config>
+
+			<metadata>
+				<enabled>
+					<endpoints>true</endpoints>
+					<parameters>true</parameters>
+					<headers>true</headers>
+					<cookies>true</cookies>
+				</enabled>
+
+				<caseSensitive>
+					<endpoints>true</endpoints>
+					<parameters>true</parameters>
+					<headers>true</headers>
+					<cookies>true</cookies>
+				</caseSensitive>
+
+				<secured>
+					<!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-START~~~ -->
+					<!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-END~~~ -->
+					<parameters>
+					</parameters>
+					<headers>
+					</headers>
+					<cookies>
+					</cookies>
+				</secured>
+			</metadata>
+		</shield>
+
+	</shields>
+</sanwaf>
