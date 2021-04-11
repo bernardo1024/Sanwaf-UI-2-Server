@@ -116,7 +116,7 @@ public class GeneralXmlTest {
   @Test
   public void testFileFilterFolders() {
     FileFilter filter = new FileFilter(Arrays.asList(".html"));
-    String[] expectedFiles = { "badFormat.html", "badRegex.html", "file-in-root-folder.html", "folder-1", "folder-2" };
+    String[] expectedFiles = { "badFormat.html", "badRegex.html", "file-in-root-folder.html", "folder-1", "folder-2", "index.html" };
     File directory = new File(rootPath);
     String[] actualFiles = directory.list(filter);
     Assert.assertArrayEquals(expectedFiles, actualFiles);

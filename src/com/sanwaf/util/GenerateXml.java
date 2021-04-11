@@ -3,6 +3,7 @@ package com.sanwaf.util;
 import java.io.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -13,6 +14,9 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 public class GenerateXml {
+  private static final char END_TYPE = '}';
+  private static final String REGEX = "r{";
+  private static final String INLINE_REGEX = "x{";
   private static final String SANWAF_FILE_PLACEHOLDER_START = "<!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-START~~~ -->";
   private static final String SANWAF_FILE_PLACEHOLDER_END = "<!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-END~~~ -->";
   private static final String DATA_SW_TYPE = "data-sw-type";
@@ -65,7 +69,7 @@ public class GenerateXml {
     File dir = new File(folderPath);
     File[] listFiles = dir.listFiles(fileFilter);
     if(listFiles == null) {
-      LOGGER.severe("ERROR: No files found in rootFolder: " + dir);
+      LOGGER.log(Level.SEVERE, "ERROR: No files found in rootFolder: {0}", dir);
       return;
     }
 
@@ -98,6 +102,9 @@ public class GenerateXml {
       sbThis.append("<endpoint>\n");
       String filepath = formatPath(file.toString(), false, false);
       String path = formatPath(cutPath(filepath), false, false);
+      if(path != null && !path.startsWith("/")) {
+        path = "/" + path;
+      }
       sbThis.append("<uri>").append(path).append("</uri>\n");
       if(strict != null && strict.length() > 0) {
         sbThis.append("<strict>").append(strict).append("</strict>\n");
@@ -135,36 +142,40 @@ public class GenerateXml {
     }
     for (String subPath : paths) {
       subPath = formatPath(subPath, true, true);
-      if (filenameWithPath.startsWith(rootPath + subPath)) {
-        filenameWithPath = filenameWithPath.substring(rootPath.length() + subPath.length(), filenameWithPath.length());
+      String cutPath = rootPath;
+      if(subPath != null) {
+        cutPath += subPath;
+      }
+      if (filenameWithPath.startsWith(cutPath)) {
+        filenameWithPath = filenameWithPath.substring(cutPath.length(), filenameWithPath.length());
       }
     }
     return filenameWithPath;
   }
 
   String buildItemXml(Element elem, boolean doEndpoints) {
-    StringBuilder sb = new StringBuilder();
-    getItemStart(elem, sb);
-    sb.append("<type>").append(getType(elem)).append("</type>");
-    sb.append("<max>").append(elem.attr("data-sw-max")).append("</max>");
-    sb.append("<min>").append(elem.attr("data-sw-min")).append("</min>");
-    sb.append("<max-value>").append(elem.attr("data-sw-max-value")).append("</max-value>");
-    sb.append("<min-value>").append(elem.attr("data-sw-min-value")).append("</min-value>");
-    sb.append("<msg>").append(elem.attr("data-sw-err-msg")).append("</msg>");
+    StringBuilder thisSb = new StringBuilder();
+    getItemStart(elem, thisSb);
+    thisSb.append("<type>").append(getType(elem)).append("</type>");
+    thisSb.append("<max>").append(elem.attr("data-sw-max")).append("</max>");
+    thisSb.append("<min>").append(elem.attr("data-sw-min")).append("</min>");
+    thisSb.append("<max-value>").append(elem.attr("data-sw-max-value")).append("</max-value>");
+    thisSb.append("<min-value>").append(elem.attr("data-sw-min-value")).append("</min-value>");
+    thisSb.append("<msg>").append(elem.attr("data-sw-err-msg")).append("</msg>");
 
     String format = elem.attr("data-sw-format");
     if (format.length() == 0) {
       format = elem.attr("data-sw-fixed-format");
     }
-    sb.append("<format>").append(format).append("</format>");
+    thisSb.append("<format>").append(format).append("</format>");
 
     if (doEndpoints) {
-      sb.append("<req>").append(elem.attr("data-sw-req")).append("</req>");
-      sb.append("<related>").append(elem.attr("data-sw-related")).append("</related>");
+      thisSb.append("<req>").append(elem.attr("data-sw-req")).append("</req>");
+      thisSb.append("<related>").append(elem.attr("data-sw-related")).append("</related>");
     }
 
-    sb.append("</item>");
-    return sb.toString();
+    thisSb.append("</item>");
+    return thisSb.toString();
   }
 
   private void getItemStart(Element elem, StringBuilder sb) {
@@ -179,8 +190,9 @@ public class GenerateXml {
 
   private String getType(Element elem) {
     String type = elem.attr(DATA_SW_TYPE);
-    if (type.startsWith("r{")) {
-      String regex = type.substring(2, type.lastIndexOf('}'));
+    if (type.startsWith(REGEX) || type.startsWith(INLINE_REGEX)) {
+      String regex = type.substring(2, type.lastIndexOf(END_TYPE));
+      type = INLINE_REGEX + regex + "}";
       try {
         Pattern.compile(regex);
       } catch (PatternSyntaxException pse) {
@@ -193,31 +205,31 @@ public class GenerateXml {
 
   // getAllOptionSelectAsConstants(doc, "select", "option", "value")
   private String getAllOptionSelectAsConstants(Document doc, String element, String subElement, String attribute) {
-    StringBuilder sb = new StringBuilder();
+    StringBuilder thisSb = new StringBuilder();
     Elements elems = doc.select(element);
 
     for (Element elem : elems) {
       if (elem.attr(DATA_SW_TYPE).length() == 0) {
-        getItemStart(elem, sb);
+        getItemStart(elem, thisSb);
         Elements subElems = elem.select(subElement);
         boolean foundFirst = false;
         for (Element subElem : subElems) {
           if (foundFirst) {
-            sb.append(",");
+            thisSb.append(",");
           } else {
-            sb.append("<type>k{");
+            thisSb.append("<type>k{");
             foundFirst = true;
           }
-          sb.append(subElem.attr(attribute));
+          thisSb.append(subElem.attr(attribute));
         }
-        sb.append("}</type></item>\n");
+        thisSb.append("}</type></item>\n");
       }
     }
-    return sb.toString();
+    return thisSb.toString();
   }
 
 
-  private void updateSanwafFile() throws FileNotFoundException, IOException {
+  private void updateSanwafFile() throws IOException {
     File file = new File(sanwafFile);
     String contents = readFile(new FileInputStream(file));
     
@@ -232,9 +244,9 @@ public class GenerateXml {
   }
   
   void writeFile(String data) throws IOException {
-    BufferedWriter writer = new BufferedWriter(new FileWriter(sanwafFile));
-    writer.write(data);
-    writer.close();
+    try(BufferedWriter writer = new BufferedWriter(new FileWriter(sanwafFile))) {
+      writer.write(data);
+    }
   }
   static String readFile(InputStream is) throws IOException {
     StringBuilder sb = new StringBuilder();

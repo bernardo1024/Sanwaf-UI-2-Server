@@ -1,0 +1,230 @@
+<!doctype html>
+<html>
+
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+
+    <!-- Sanwaf-ui code - STEP 1. import sanwaf-ui.js -->
+    <script src="sanwaf-ui.js"></script>
+
+    <!-- Sanwaf-ui code - STEP 2. import sanwaf-ui.css (optional) -->
+    <link rel="stylesheet" type="text/css" href="sanwaf-ui.css" media="screen" />  
+    
+    <style> 
+      * { Background : #322f2f; color: #d3d0d0;font-family: Arial; } 
+      body { font-size: 1em; }
+      
+      .table-instructions {
+		    margin: 25px 0;
+		    font-size: 1em;
+		    font-family: Arial;
+		    min-width: 1000px;
+		    max-width: 1000px;
+		    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+		    border-spacing: 10px; 
+		    margin-left: 10px;
+		}
+		.table-instructions td {
+ 			 vertical-align: top;
+ 			 align: right;
+		}
+		.table-compact {
+		    border-collapse: collapse;
+		    margin: 25px 0;
+		    font-size: 0.9em;
+		    font-family: sans-serif;
+		    min-width: 400px;
+		    box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+		    margin-left: 50px;
+		}
+		.table-compact td {
+ 			 vertical-align: top;
+		}
+    </style> 
+  </head>
+
+    <!-- Sanwaf-ui code - STEP 3. configure sanwaf-ui -->
+    <div id="sanwafUiConfig" style="display:none"
+      data-errorActions="hoverOnLabel,hoverShowLabel,colorLabel,colorInput"
+    ></div>
+    
+  <body>
+    <h1 id="top">Sanwaf Sample Application</h1>
+  
+    <div id="sanwafuierrorwrapper" style="display: none;">
+      <b>Uses Default Value</b>
+      <div id="sanwafuierrortable"></div>
+      <input type="button" value="hide errors" onclick="document.getElementById('sanwafuierrorwrapper').style.display='none';"/>
+    </div>
+    
+    <form id="testform" method="post" action="submit/test.html" onsubmit="sanwafui()">
+      <table class="table-instructions">
+        <tr>
+          <td><b>Data Type</b></td>
+          <td><b>Input</b></td>
+          <td>&nbsp;&nbsp;</td>
+          <td><b>Description</b></td>
+        </tr>
+        <tr>
+          <td><label for="char">Character</label></td>
+          <td><input type="text" id="char" name="char" size="1" data-sw-display="char" data-sw-type="c" /></td>
+          <td><b></b></td>
+          <td>Only a single character allowed<br/>data-sw-type="c"</td>
+        </tr>
+        <tr>
+          <td><label for="numeric">Numeric</label></td>
+          <td><input type="text" id="numeric" name="numeric" size="20" data-sw-display="numeric" data-sw-type="n" /></td>
+          <td><b></b></td>
+          <td>Only numeric values allowed<br/>data-sw-type="n"</td>
+        </tr>
+        <tr>
+          <td><label for="numericdelimited">Numeric Delimited</label></td>
+          <td><input type="text" id="numericdelimited" name="numericdelimited" size="20" data-sw-display="numericdelimited" data-sw-type="n{,}" /></td>
+          <td><b></b></td>
+          <td>Only numeric values delimited by a "," allowed<br/>data-sw-type="n{,}"</td>
+        </tr>
+        <tr>
+          <td><label for="alphanumeric">Alphanumeric</label></td>
+          <td><input type="text" id="alphanumeric" name="alphanumeric" size="20" data-sw-display="alphanumeric" data-sw-type="a" /></td>
+          <td><b></b></td>
+          <td>Only alphanumeric values allowed<br/>data-sw-type="a"</td>
+        </tr>
+        <tr>
+          <td><label for="alphanumericandmore">Alphanumeric &amp; More</label></td>
+          <td><input type="text" id="alphanumericandmore" name="alphanumericandmore" size="20" data-sw-display="alphanumericandmore" data-sw-type="a{'\s!}" /></td>
+          <td><b></b></td>
+          <td>Only alphanumeric and additional characters: [space], [exclamation], and [single quote] allowed<br/>data-sw-type="a{\s!'}"</td>
+        </tr>
+        <tr>
+          <td><label for="constant">Constant</label></td>
+          <td><input type="text" id="constant" name="constant" size="20" data-sw-display="constant" data-sw-type="k{y,n}" /></td>
+          <td><b></b></td>
+          <td>Only the values: "y", "n" allowed<br/>data-sw-type="k{y,n}"</td>
+        </tr>
+        <tr>
+          <td><label for="regex">Regex</label></td>
+          <td><input type="text" id="regex" name="regex" size="20" data-sw-display="regex" data-sw-type="r{^[^\s@]+@[^\s@]+$}" data-sw-err-msg="Must be a proper email address"/></td>
+          <td><b></b></td>
+          <td>Only a proper email address allowed<br/>data-sw-type="r{^[^\s@]+@[^\s@]+$}"</td>
+        </tr>
+
+
+        <tr>
+          <td><label for="format">Format</label></td>  
+          <td><input type="text" id="format" name="format" size="20" data-sw-display="Format" data-sw-type="s" data-sw-format="(###) ###-####" /></td>
+          <td><b></b></td>
+          <td>Only properly formated characters allowed<br/>data-sw-format="(###) ###-####" </td>
+        </tr>
+
+       <tr>
+          <td><label for="equalityParent">Equality Relationship<br/>(parent)</label></td>
+          <td><input type="text" id="equalityParent" name="equalityParent" size="20" data-sw-display="Parent" data-sw-type="s" data-sw-max="10" data-sw-min="4" /></td>
+          <td><b></b></td>
+          <td>Max = 10 chars, Min = 4 chars. If entered, child must have the same value<br/>data-sw-type="s"</td>
+        </tr>
+        <tr>
+          <td><label for="equalityChild">Equality Relationship<br/>(child)</label></td>
+          <td><input type="text" id="equalityChild" name="equalityChild" size="20" data-sw-display="Child" data-sw-type="s" data-sw-related="equalityParent:=" data-sw-max="10" data-sw-min="4" /></td>
+          <td><b></b></td>
+          <td>Must equal Parent value (if set)<br/>data-sw-related="equalityParent:="</td>
+        </tr>
+        <tr>
+          <td><label for="dependencyParent">Dependency Relationship<br/>(parent)</label></td>
+          <td><select size="1" id="dependencyParent" name="dependencyParent" ><option value="Yes">Yes</option><option value="No">No</option></select></td>
+          <td><b></b></td>
+          <td>If value selected = &quot;yes&quot; Child must be entered<br/></td>
+        </tr>
+        <tr>
+          <td><label for="dependencyChild">Dependency Relationship<br/>(child)</label></td>
+          <td><input type="text" id="dependencyChild" name="dependencyChild" size="20" data-sw-display="Chid" data-sw-type="s" data-sw-max="30" data-sw-min="0" data-sw-related="dependencyParent:Yes" data-sw-err-msg="Must be entered if Parent is enered" /></td>
+          <td><b></b></td>
+          <td>If Parent =  &quot;yes&quot;, Child becomes required<br/>data-sw-related="dependencyParent:Yes"</td>
+        </tr>
+
+
+
+        <tr>
+          <td></td>
+          <td><input type="submit" value="Validate" onClick="if(document.getElementById('sanwafUi').checked){return isSanwafUiFormValid(testform)}"/></td>
+          <td></td>
+          <td>Click the validate button to see Sanwaf in action<br/>Use the checkboxes below to control the behavior</td>
+        </tr>
+      </table>
+    </form>
+
+    
+    <script>
+      function togleDisplayType(refresh){
+        var att = document.createAttribute("data-errorActions");
+        att.value = "";
+        if(document.getElementById("hoverOnLabel").checked){ att.value += "hoverOnLabel,"; }
+        if(document.getElementById("hoverShowLabel").checked){ att.value += "hoverShowLabel,"; }
+        if(document.getElementById("colorLabel").checked){ att.value += "colorLabel,"; }
+        if(document.getElementById("colorInput").checked){ att.value += "colorInput,"; }
+        if(document.getElementById("onFocusDisableColors").checked){ att.value += "onFocusDisableColors,"; }
+        if(document.getElementById("showOnPage").checked){ att.value += "showOnPage,"; }
+        if(document.getElementById("showOnPageSanwafTable").checked){ att.value += "showOnPageSanwafTable,"; }
+        if(document.getElementById("alertWithPopup").checked){ att.value += "alertWithPopup"; }
+        if(!document.getElementById("sanwafUiConfig")){
+          var div = document.createElement('div');
+          div.id = 'sanwafUiConfig';
+          div.style="display:none"
+          document.getElementsByTagName('body')[0].appendChild(div);
+        }
+        document.getElementById("sanwafUiConfig").setAttributeNode(att);
+
+        att = document.createAttribute("data-blurActions");
+        att.value = "";
+        if(document.getElementById("hoverOnLabel").checked){ att.value += "hoverOnLabel,"; }
+        if(document.getElementById("hoverShowLabel").checked){ att.value += "hoverShowLabel,"; }
+        if(document.getElementById("colorLabel").checked){ att.value += "colorLabel,"; }
+        if(document.getElementById("colorInput").checked){ att.value += "colorInput,"; }
+        if(document.getElementById("onFocusDisableColors").checked){ att.value += "onFocusDisableColors,"; }
+        document.getElementById("sanwafUiConfig").setAttributeNode(att);
+        if(refresh){
+        	isSanwafUiFormValid(testform);
+        }
+      }
+    </script>
+    <h3>Change Sanwaf-ui Error Behavior</h3>
+    <table class="table-compact">
+      <tr>
+        <td><b>Hover</b></td>
+        <td><b>Color</b></td>
+        <td><b>In-Line</b></td>
+        <td><b>PopUp</b></td>
+        <td><b>Javascript</b></td>
+      </tr>
+      <tr>
+        <td><input type="checkbox" id="hoverOnLabel" onClick="togleDisplayType(true)" checked/>hover on Label</td>
+        <td><input type="checkbox" id="colorLabel" onClick="togleDisplayType(true)" checked/>color label</td>
+        <td><input type="checkbox" id="showOnPage" onClick="togleDisplayType(true)" />Show errors on page</td>
+        <td><input type="checkbox" id="alertWithPopup" onClick="togleDisplayType(false)" />alert with popup <br/></td>
+        <td><input type="checkbox" id="sanwafUi" onClick="togleDisplayType(true)" checked/>Enable client side Javascript</td>
+      </tr>
+      <tr>
+        <td><input type="checkbox" id="hoverShowLabel" onClick="togleDisplayType(true)" checked/>hover include label</td>
+        <td><input type="checkbox" id="colorInput" onClick="togleDisplayType(true)" checked/>color input</td>
+        <td><input type="checkbox" id="showOnPageSanwafTable" onClick="togleDisplayType(true)" />Show Sanwaf-ui Error Table</td>
+        <td></td>
+		<td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><input type="checkbox" id="onFocusDisableColors" onClick="togleDisplayType(true)" />onFocus remove color</td>
+        <td></td>
+        <td></td>
+		<td></td>
+      </tr>
+    </table>
+    <br/>
+    <br/>
+    <br/>
+    
+    <!-- sanwaf-ui code - STEP 6. initialize sanwaf-ui (sets event listeners) -->
+    <script> initSanwafui(); </script>
+    
+  </body>
+</html>
