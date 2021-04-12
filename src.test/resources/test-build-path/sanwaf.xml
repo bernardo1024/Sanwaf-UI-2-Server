@@ -13,15 +13,16 @@
 		</errorHandling>
 
 		<errorMessages>
-			<char><![CDATA[ <b>Only a single character is permitted.</b>&nbsp;<i>For example: <b>a</b></i>]]></char>
-			<numeric><![CDATA[ <b>Only numeric values are permitted.</b>&nbsp;<i>For example: <b>-123.456</b></i>]]></numeric>
-			<numericDelimited><![CDATA[ <b>Only numeric values and numeric values separated by &quot;{0}&quot; are permitted.</b>&nbsp;<i>For example: <b>123,-123,123.456</b></i>]]></numericDelimited>
-			<alphanumeric><![CDATA[ <b>Only alphanumeric characters are permitted.</b>&nbsp;<i>For example: <b>abc123</b></i>]]></alphanumeric>
-			<alphanumericAndMore><![CDATA[ <b>Only alphanumeric characters and special characters: <i>{0}</i> are permitted.</b>&nbsp;<i>For example: <b>abc123{0}</b></i>]]></alphanumericAndMore>
-			<constant><![CDATA[ <b>Invalid value provided,</b>&nbsp;<i>value must be one of: <b>{0}</b></i>]]></constant>
-			<string><![CDATA[ <b>Invalid text provided.</b>&nbsp;<i>Recommended Correction: Add a space before any special characters, such as: <b>&nbsp;&lt;&nbsp;&gt;&nbsp;:</b></i>]]></string>
-			<regex><![CDATA[ Invalid value provided, please try again.]]></regex>
-			<java><![CDATA[ Invalid value provided.]]></java>
+			<char><![CDATA[Only a single character is permitted]]></char>
+			<numeric><![CDATA[Only numeric values are permitted]]></numeric>
+			<numericDelimited><![CDATA[Only numeric values and numeric values separated by &quot;{0}&quot; are permitted]]></numericDelimited>
+			<alphanumeric><![CDATA[Only alphanumeric characters are permitted]]></alphanumeric>
+			<alphanumericAndMore><![CDATA[Only alphanumeric characters and special characters: <i>{0}</i> are permitted]]></alphanumericAndMore>
+			<constant><![CDATA[Invalid value provided,&nbsp;value must be one of: <i>{0}</i>]]></constant>
+			<string><![CDATA[Invalid text provided]]></string>
+			<regex><![CDATA[Invalid value provided]]></regex>
+			<java><![CDATA[Invalid value provided]]></java>
+			<format><![CDATA[Failed to conform to format: {0}]]></format>
 		</errorMessages>
 	</global-settings>
 
