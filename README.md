@@ -21,7 +21,7 @@
         - Converts the Sanwaf-UI declarative Attributes into a Sanwaf-Server consumable form
         - Automate Sanwaf-Server configuration using this utility
   
-See the [Sanwaf-Sample](https://github.com/bernardo1024/Sanwaf-Sample) project for an end-2-end sample of using Sanwaf-UI, & Sanwaf-Server
+See the [Sanwaf-Sample](https://github.com/bernardo1024/Sanwaf-Sample) project for an end-2-end sample of using Sanwaf-UI & Sanwaf-Server
 
 # SanWaf-UI-2-Server
 
