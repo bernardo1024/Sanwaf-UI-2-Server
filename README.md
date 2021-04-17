@@ -1,5 +1,5 @@
 # Sanwaf Overview
-Sanwaf is a declarative data validation framework that secures your UI & Server:
+Sanwaf is a declarative data validation framework that secures your UI & Server
 
 - Sanwaf-UI is a Sanitation Web Application Firewall that runs on the Browser
         
