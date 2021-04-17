@@ -38,43 +38,43 @@ To run the Sanwaf-UI-2-Server utility:
         
           [path] 
               The root path from where to start recursively scanning for files to parse
-              Format:		--path:<path>
-              Example:	--path:/path/to/files/
+              Format:  --path:<path>
+              Example: --path:/path/to/files/
 
           [extensions]
               Comma separated list of file extension to search for
-              Format:	--extensions:<list,of,extensions>
-              Example:	--extensions:.html,.jsp
+              Format:  --extensions:<list,of,extensions>
+              Example: --extensions:.html,.jsp
 
           [file]
               Fully pathed filename to place outputs into
-              Format:		--file:<pathed filename>
-              Example:	--file:/folder/sanwaf.xml
+              Format:  --file:<pathed filename>
+              Example: --file:/folder/sanwaf.xml
 
           [append]
               Flag to specify whether to append or override file
-              Format:		--append:<true/false(default)>
-              Example:	--append:true
+              Format:  --append:<true/false(default)>
+              Example: --append:true
 
           [output]
               Flag to specify to output XML to console
-              Format:		--output:<true/false(default)>
-              Example:	--output:true
+              Format:  --output:<true/false(default)>
+              Example: --output:true
 
           [nonSanwaf]
               Flag to specify to include non sanwaf elements as constants
-              Format:		--nonSanwaf:<true/false(default)>
-              Example:	--nonSanwaf:true
+              Format:  --nonSanwaf:<true/false(default)>
+              Example: --nonSanwaf:true
 
           [endpoints]
               Flag to specify to use endpoints format in output
-              Format:		--endpoints:<true/false(default)>
-              Example:	--endpoints:true
+              Format:  --endpoints:<true/false(default)>
+              Example: --endpoints:true
 
           [strict]
               Flag to include 'strict' attribute in output (only for doEndpoints)
-              Format:		--strict:<true/false(default)/less>
-              Example:	--strict:less
+              Format:  --strict:<true/false(default)/less>
+              Example: --strict:less
 
           Note: When "--file" is specified, the file contents must include the following markers to place to generated XML:
             Start Marker: <!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-START~~~ -->
