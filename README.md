@@ -4,18 +4,23 @@
 - [Sanwaf-UI](https://github.com/bernardo1024/Sanwaf-UI) is a Sanitation Web Application Firewall that runs on the Browser
         
         - Sanwaf-UI uses a declarative mechanism to add validation to HTML pages using custom Sanwaf-UI Attributes
+        - See [sanwaf-ui-demo.html](https://bernardo1024.github.io/) for a front-end example
         - No custom code is required to perform validation on web pages
 
 -  [Sanwaf-Server](https://github.com/bernardo1024/Sanwaf-Server) is a Sanitation Web Application Firewall that runs on the Server
         
-        - It is configured with an XML file
-        - can be configured independently of the client
+        - Sanwaf-Server  is configured with an XML file
+        - Provides for parameter, cookie, header and endpoint protection
+        - Can be used independently of Sanwaf-UI
+        - No custom code is required to perform validation on the server
 
 - [Sanwaf-UI-2-Server](https://github.com/bernardo1024/Sanwaf-UI-2-Server) Utility converts the Sanwaf-UI declarative validation into the server XML format
         
-        - provides for effortless server configuration using Sanwaf-UI attributes from web pages
+        - Provides for effortless Sanwaf-Server configuration using Sanwaf-UI attributes from web pages 
+        - Converts the Sanwaf-UI declarative Attributes into a Sanwaf-Server consumable form
+        - The utility can be used in your pipeline to automate Sanwaf-Server configuration
   
-See the Sanwaf-Sampale project for an end-2-end sample of using Sanwaf-UI, & Sanwaf-Server
+See the [Sanwaf-Sample](https://github.com/bernardo1024/Sanwaf-Sample) project for an end-2-end sample of using Sanwaf-UI, & Sanwaf-Server
 
 # SanWaf-UI-2-Server
 
