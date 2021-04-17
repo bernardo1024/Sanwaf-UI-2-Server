@@ -68,8 +68,10 @@
 				</caseSensitive>
 
 				<secured>
+					<endpoints>
 					<!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-START~~~ -->
 					<!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-END~~~ -->
+					</endpoints>
 					<parameters>
 					</parameters>
 					<headers>
