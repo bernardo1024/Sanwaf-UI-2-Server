@@ -2,15 +2,15 @@
 Sanwaf is a declarative framework that provides validation to your web projects protecting both the UI and the Server tiers:
 
 - Sanwaf-UI is a Sanitation Web Application Firewall that runs on the Browser
-        Sanwaf-UI uses a declarative mechanism to add validation to HTML pages using custom Sanwaf Attributes
-        No custom code is required to perform validation on web pages
+        - Sanwaf-UI uses a declarative mechanism to add validation to HTML pages using custom Sanwaf Attributes
+        - No custom code is required to perform validation on web pages
 
 - Sanwaf-Server is a Sanitation Web Application Firewall that runs on the Server
-        It is configured with an XML file
-        can be configured independently of the client
+        - It is configured with an XML file
+        - can be configured independently of the client
 
 - Sanwaf-UI-2-Server Utility converts the Sanwaf-UI declarative validation into the server XML format
-  provides for effortless server configuration
+        - provides for effortless server configuration
   
 
 
