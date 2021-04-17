@@ -29,12 +29,16 @@ Sanwaf-UI-2-Server is a utility that allows you to configure Sanwaf-Server using
 
 To run the Sanwaf-UI-2-Server utility:
 
-1. download the Sanwaf-UI-2-Server.jar file
-2. run the following command:
+1. Clone the project and run 
+           
+       mvn install 
+        
+3. Copy the sanwaf-ui-2-server.jar file from the target folder to a location on your build server
+4. run the following command:
 
-        java -jar sanwaf-ui-2-server.jar [path] [extensions] [file] [append] [output] [nonSanwaf] [endpoints] [strict]
+       java -jar sanwaf-ui-2-server.jar [path] [extensions] [file] [append] [output] [nonSanwaf] [endpoints] [strict]
 
-        where (order of parameters not relevant):
+       where (order of parameters not relevant):
         
           [path] 
               The root path from where to start recursively scanning for files to parse
