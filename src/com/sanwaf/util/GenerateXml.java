@@ -145,8 +145,8 @@ public class GenerateXml {
     StringBuilder thisSb = new StringBuilder();
     getItemStart(elem, thisSb);
     thisSb.append("<type>").append(getType(elem)).append("</type>");
-    thisSb.append("<max>").append(elem.attr("data-sw-max")).append("</max>");
-    thisSb.append("<min>").append(elem.attr("data-sw-min")).append("</min>");
+    thisSb.append("<max>").append(elem.attr("data-sw-max-length")).append("</max>");
+    thisSb.append("<min>").append(elem.attr("data-sw-min-length")).append("</min>");
     thisSb.append("<max-value>").append(elem.attr("data-sw-max-value")).append("</max-value>");
     thisSb.append("<min-value>").append(elem.attr("data-sw-min-value")).append("</min-value>");
     thisSb.append("<msg>").append(elem.attr("data-sw-err-msg")).append("</msg>");
@@ -158,7 +158,7 @@ public class GenerateXml {
     thisSb.append("<format>").append(format).append("</format>");
 
     if (doEndpoints) {
-      thisSb.append("<req>").append(elem.attr("data-sw-req")).append("</req>");
+      thisSb.append("<req>").append(elem.attr("data-sw-required")).append("</req>");
       thisSb.append("<related>").append(elem.attr("data-sw-related")).append("</related>");
     }
 

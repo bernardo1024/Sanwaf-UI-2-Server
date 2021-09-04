@@ -120,13 +120,13 @@
 
        <tr>
           <td><label for="equalityParent">Equality Relationship<br/>(parent)</label></td>
-          <td><input type="text" id="equalityParent" name="equalityParent" size="20" data-sw-display="Parent" data-sw-type="s" data-sw-max="10" data-sw-min="4" /></td>
+          <td><input type="text" id="equalityParent" name="equalityParent" size="20" data-sw-display="Parent" data-sw-type="s" data-sw-max-length=="10" data-sw-min-length="4" /></td>
           <td><b></b></td>
           <td>Max = 10 chars, Min = 4 chars. If entered, child must have the same value<br/>data-sw-type="s"</td>
         </tr>
         <tr>
           <td><label for="equalityChild">Equality Relationship<br/>(child)</label></td>
-          <td><input type="text" id="equalityChild" name="equalityChild" size="20" data-sw-display="Child" data-sw-type="s" data-sw-related="equalityParent:=" data-sw-max="10" data-sw-min="4" /></td>
+          <td><input type="text" id="equalityChild" name="equalityChild" size="20" data-sw-display="Child" data-sw-type="s" data-sw-related="equalityParent:=" data-sw-max-length=="10" data-sw-min-length="4" /></td>
           <td><b></b></td>
           <td>Must equal Parent value (if set)<br/>data-sw-related="equalityParent:="</td>
         </tr>
@@ -138,7 +138,7 @@
         </tr>
         <tr>
           <td><label for="dependencyChild">Dependency Relationship<br/>(child)</label></td>
-          <td><input type="text" id="dependencyChild" name="dependencyChild" size="20" data-sw-display="Chid" data-sw-type="s" data-sw-max="30" data-sw-min="0" data-sw-related="dependencyParent:Yes" data-sw-err-msg="Must be entered if Parent is enered" /></td>
+          <td><input type="text" id="dependencyChild" name="dependencyChild" size="20" data-sw-display="Chid" data-sw-type="s" data-sw-max-length=="30" data-sw-min-length="0" data-sw-related="dependencyParent:Yes" data-sw-err-msg="Must be entered if Parent is enered" /></td>
           <td><b></b></td>
           <td>If Parent =  &quot;yes&quot;, Child becomes required<br/>data-sw-related="dependencyParent:Yes"</td>
         </tr>

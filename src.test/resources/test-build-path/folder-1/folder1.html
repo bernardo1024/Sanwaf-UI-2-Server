@@ -41,12 +41,12 @@
         <tr>
           <td><label for="telephone">Telephone number</label></td>  
           <!-- Sanwaf-ui code - 4. add sanwaf attributes (data-sw*) to configure elements;  -->
-          <td><input type="text" id="telephone" size="20" data-sw-display="Telephone Number" data-sw-type="s" data-sw-req="true" data-sw-format="(###) ###-####" /></td>
+          <td><input type="text" id="telephone" size="20" data-sw-display="Telephone Number" data-sw-type="s" data-sw-required="true" data-sw-format="(###) ###-####" /></td>
           <td>Required. Format: "(###) ###-####"</td>
         </tr>
         <tr>
           <td><label for="postalcode">Postal Code</label></td>  
-          <td><input type="text" id="postalcode" size="20" data-sw-display="Postal Code" data-sw-type="s" data-sw-req="true" data-sw-format="A#A #A#"  /></td>
+          <td><input type="text" id="postalcode" size="20" data-sw-display="Postal Code" data-sw-type="s" data-sw-required="true" data-sw-format="A#A #A#"  /></td>
           <td>Required. format: "A#A #A#"</td>
         </tr>
         <tr>
@@ -56,12 +56,12 @@
         </tr>
         <tr>
           <td><label for="pwd1">Password</label></td>
-          <td><input type="password" id="pwd1" size="20" data-sw-display="Password" data-sw-type="s" data-sw-max="10" data-sw-min="4" /></td>
+          <td><input type="password" id="pwd1" size="20" data-sw-display="Password" data-sw-type="s" data-sw-max-length="10" data-sw-min-length="4" /></td>
           <td>Max = 10 chars, Min = 4 chars. If entered, confirm password must have the same value</td>
         </tr>
         <tr>
           <td><label for="confirmPassword">Confirm Password</label></td>
-          <td><input type="password" id="confirmPassword" size="20" data-sw-display="Confirm Password" data-sw-type="s" data-sw-related="pwd1:=" data-sw-max="10" data-sw-min="4" /></td>
+          <td><input type="password" id="confirmPassword" size="20" data-sw-display="Confirm Password" data-sw-type="s" data-sw-related="pwd1:=" data-sw-max-length="10" data-sw-min-length="4" /></td>
           <td>Max = 10 chars, Min = 4 chars. Required only if above field entered</td>
         </tr>
         <tr>
@@ -71,17 +71,17 @@
         </tr>
         <tr>
           <td><label for="carModel">Car Model</label></td>
-          <td><input type="text" id="carModel" size="20" data-sw-display="Car Model" data-sw-type="s" data-sw-max="30" data-sw-min="0" data-sw-related="haveCar:Yes" data-sw-err-msg="Must be entered if you own a car" /></td>
+          <td><input type="text" id="carModel" size="20" data-sw-display="Car Model" data-sw-type="s" data-sw-max-length="30" data-sw-min-length="0" data-sw-related="haveCar:Yes" data-sw-err-msg="Must be entered if you own a car" /></td>
           <td>If car model =  &quot;yes&quot;, this element is required</td>
         </tr>
         <tr>
           <td><label for="visa">Visa number</label></td>
-          <td><input type="text" id="visa" size="20" data-sw-display="Visa Number" data-sw-type="n" data-sw-max="16" data-sw-min="16" data-sw-err-msg="Must be Numeric and expiry must be supplied" /></td>
+          <td><input type="text" id="visa" size="20" data-sw-display="Visa Number" data-sw-type="n" data-sw-max-length="16" data-sw-min-length="16" data-sw-err-msg="Must be Numeric and expiry must be supplied" /></td>
           <td>must be 16 numeric digits</td>
         </tr>
         <tr>
           <td><label for="visaExpirationDate">Expiry</label></td>
-          <td><input type="text" id="visaExpirationDate" size="20" data-sw-display="Expiry" data-sw-type="n" data-sw-related="visa" data-sw-max="4" data-sw-min="4" data-sw-err-msg="Must be 4 digits" /></td>
+          <td><input type="text" id="visaExpirationDate" size="20" data-sw-display="Expiry" data-sw-type="n" data-sw-related="visa" data-sw-max-length="4" data-sw-min-length="4" data-sw-err-msg="Must be 4 digits" /></td>
           <td>Must be 4 digits.  Required if Visa number is entered</td>
         </tr>
         <tr>
@@ -91,7 +91,7 @@
         </tr>
         <tr>
           <td><label for="stateprov">State/Province</label></td>
-          <td><input type="text" id="stateprov" size="20" data-sw-display="Province/State" data-sw-type="s" data-sw-max="3" data-sw-min="1" data-sw-req="true" /></td>
+          <td><input type="text" id="stateprov" size="20" data-sw-display="Province/State" data-sw-type="s" data-sw-max-length="3" data-sw-min-length="1" data-sw-required="true" /></td>
           <td>Required. Must be 3 characters&nbsp;</td>
         </tr>
         <!-- Sanwaf-ui code - 5. call sanwaf-ui to validate form: isSanwafUiFormValid(testform)  -->

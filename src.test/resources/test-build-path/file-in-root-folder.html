@@ -31,7 +31,7 @@
   	<option value='2'>Third value</option>
   </select>
   
-   <input type="text" name="somename" id="someid" size="20" data-sw-display="somename" data-sw-type="s" data-sw-min="4" data-sw-max="10"/>
+   <input type="text" name="somename" id="someid" size="20" data-sw-display="somename" data-sw-type="s" data-sw-min-length="4" data-sw-max-length="10"/>
   
     <table class="table-instructions-inline-block">
       <tr><td>For complex relationships, encapsulate the 2 part format with parenthesis's "( RelatedToElementPart <b>:</b> RelationshipSpecificationPart )" and specify the &amp;&amp; and/or the || operators</td><td></td></tr>
@@ -47,9 +47,9 @@
             <table class="table-compact-normal-font">
               <tr>
                 <td><label for="pass1">Password</label></td>
-                <td><input type="password" id="pass1" size="20" data-sw-display="Password" data-sw-type="s" data-sw-min="4" data-sw-max="10"/></td>
+                <td><input type="password" id="pass1" size="20" data-sw-display="Password" data-sw-type="s" data-sw-min-length="4" data-sw-max-length="10"/></td>
                 <td><label for="pass2">Confirm Password</label></td>
-                <td><input type="password" id="pass2" size="20" data-sw-display="Confirm Password" data-sw-type="s" data-sw-related="pass1:=" data-sw-min="4" data-sw-max="10" />  <input type="button" value="Validate" onClick="return isSanwafUiFormValid(reldemopassword)"/></td>
+                <td><input type="password" id="pass2" size="20" data-sw-display="Confirm Password" data-sw-type="s" data-sw-related="pass1:=" data-sw-min-length="4" data-sw-max-length="10" />  <input type="button" value="Validate" onClick="return isSanwafUiFormValid(reldemopassword)"/></td>
               </tr>
             </table>
           </form>
@@ -69,7 +69,7 @@
                 <td><label for="allergies">Do you have food allergies</label></td>
                 <td><select size="1" id="allergies" data-sw-type="s"><option value="Yes">Yes</option><option value="No">No</option></select></td>
                 <td><label for="foodsallergicto">foods allergic to</label></td>
-                <td><input type="text" id="foodsallergicto" data-sw-display="Foods allergic to" data-sw-type="s" data-sw-max="30" data-sw-min="0" data-sw-related="allergies:Yes"/> <input type="button" value="Validate" onClick="return isSanwafUiFormValid(reldemoEqualValue)"/></td>
+                <td><input type="text" id="foodsallergicto" data-sw-display="Foods allergic to" data-sw-type="s" data-sw-max-length="30" data-sw-min-length="0" data-sw-related="allergies:Yes"/> <input type="button" value="Validate" onClick="return isSanwafUiFormValid(reldemoEqualValue)"/></td>
               </tr>
             </table>
           </form>
@@ -91,7 +91,7 @@
                 <td><label for="weights">Lift weights</label></td>
                 <td><select size="1" id="weights"><option value="Yes">Yes</option><option value="No">No</option></select></td>
                 <td><label for="duration">Duration Exersizing</label></td>
-                <td><input type="text" id="duration" data-sw-display="Duration of all exersizes" data-sw-type="s" data-sw-max="30" data-sw-min="0" data-sw-related="(jog:Yes)||(weights:Yes)"/></td>
+                <td><input type="text" id="duration" data-sw-display="Duration of all exersizes" data-sw-type="s" data-sw-max-length="30" data-sw-min-length="0" data-sw-related="(jog:Yes)||(weights:Yes)"/></td>
                 <td></td><td><input type="button" value="Validate" onClick="return isSanwafUiFormValid(reldemoOrCondition)"/></td><td></td>
               </tr>
             </table>
