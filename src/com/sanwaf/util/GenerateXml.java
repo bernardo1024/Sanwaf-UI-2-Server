@@ -34,17 +34,34 @@ public class GenerateXml {
   private String strict = "";
   private String sanwafFile = "";
   private boolean appendToFile = false;
+  private String providedPlaceholderStart = null;
+  private String providedPlaceholderEnd = null;
   private FileFilter fileFilter = null;
   private StringBuilder sb = new StringBuilder();
 
   GenerateXml(String rootPath, List<String> extensions, boolean doEndpoints, boolean doNonAnnotated, String sanwafFile, boolean appendToFile, String strict) {
+    this(rootPath, extensions, doEndpoints, doNonAnnotated, sanwafFile, appendToFile, strict, "", "");
+  }
+
+  GenerateXml(String rootPath, List<String> extensions, boolean doEndpoints, boolean doNonAnnotated, String sanwafFile, boolean appendToFile, String strict, String providedPlaceholderStart,
+      String providedPlaceholderEnd) {
     this.rootPath = formatPath(rootPath, false, true);
     this.doEndpoints = doEndpoints;
     this.doNonAnnotated = doNonAnnotated;
     this.sanwafFile = sanwafFile;
     this.appendToFile = appendToFile;
     this.strict = strict;
+    this.providedPlaceholderStart = providedPlaceholderStart;
+    this.providedPlaceholderEnd = providedPlaceholderEnd;
     fileFilter = new FileFilter(extensions);
+    
+    if(this.providedPlaceholderStart == null || this.providedPlaceholderStart.length() == 0) {
+      this.providedPlaceholderStart = SANWAF_FILE_PLACEHOLDER_START;
+    }
+    if(this.providedPlaceholderEnd == null || this.providedPlaceholderEnd.length() == 0) {
+      this.providedPlaceholderEnd = SANWAF_FILE_PLACEHOLDER_END;
+    }
+    
   }
 
   public String process() throws IOException {
@@ -92,63 +109,67 @@ public class GenerateXml {
   }
 
   private void parseFile(File file) throws IOException {
-    StringBuilder sbThis = new StringBuilder();
-    if (doEndpoints) {
-      parseFileEndpoints(file, sbThis);
-    }
-    boolean addedElements = false;
     Document doc = Jsoup.parse(file, "UTF-8");
-    for (Element elem : doc.getElementsByAttribute(DATA_SW_TYPE)) {
-      sbThis.append(buildItemXml(elem, doEndpoints)).append("\n");
-      addedElements = true;
+    Elements forms = doc.select("form");
+    if (forms.size() == 0) {
+      // nothing to do, skip it
+      return;
     }
+    StringBuilder sbThis = new StringBuilder();
 
-    if (doNonAnnotated) {
-      String s = getAllOptionSelectAsConstants(doc, "select", "option", "value");
-      if (s.length() > 0) {
-        sbThis.append(s);
+    for (Element form : forms) {
+      String action = form.attr("action");
+
+      if (action == null || action.length() == 0) {
+        // TODO: pull from attribute or page
+
+      }
+
+      Document formdoc = Jsoup.parse(form.toString());
+
+      if (doEndpoints) {
+        sbThis.append("<endpoint>\n");
+        sbThis.append("<uri>").append(action).append("</uri>\n");
+
+        if (strict != null && strict.length() > 0 && (TRUE.equalsIgnoreCase(strict) || FALSE.equalsIgnoreCase(strict) || LESS_THAN.equals(strict) || LESS.equalsIgnoreCase(strict))) {
+          sbThis.append("<strict>").append(strict.toLowerCase()).append("</strict>\n");
+        }
+        sbThis.append("<items>\n");
+      }
+
+      boolean addedElements = false;
+      for (Element elem : formdoc.getElementsByAttribute(DATA_SW_TYPE)) {
+        sbThis.append(buildItemXml(formdoc, elem, doEndpoints)).append("\n");
         addedElements = true;
       }
-    }
 
-    if (doEndpoints) {
-      sbThis.append("</items>\n");
-      sbThis.append("</endpoint>\n");
-    }
-    if (addedElements) {
-      sb.append(sbThis);
+      if (doNonAnnotated) {
+        String s = getAllOptionSelectAsConstants(formdoc, "select", "option", "value");
+        if (s.length() > 0) {
+          sbThis.append(s);
+          addedElements = true;
+        }
+      }
+
+      if (doEndpoints) {
+        sbThis.append("</items>\n");
+        sbThis.append("</endpoint>\n");
+      }
+      if (addedElements) {
+        sb.append(sbThis);
+      }
     }
   }
 
-  private void parseFileEndpoints(File file, StringBuilder sbThis) {
-    sbThis.append("<endpoint>\n");
-    String filepath = formatPath(file.toString(), false, false);
-    String path = formatPath(cutPath(filepath), false, false);
-    if (path != null && !path.startsWith(SLASH)) {
-      path = SLASH + path;
-    }
-    sbThis.append("<uri>").append(path).append("</uri>\n");
-    if (strict != null && strict.length() > 0 && (TRUE.equalsIgnoreCase(strict) || FALSE.equalsIgnoreCase(strict) || LESS_THAN.equals(strict) || LESS.equalsIgnoreCase(strict))) {
-      sbThis.append("<strict>").append(strict.toLowerCase()).append("</strict>\n");
-    }
-    sbThis.append("<items>\n");
-  }
-
-  String cutPath(String filenameWithPath) {
-    if (filenameWithPath.startsWith(rootPath)) {
-      filenameWithPath = filenameWithPath.substring(rootPath.length(), filenameWithPath.length());
-    }
-    return filenameWithPath;
-  }
-
-  String buildItemXml(Element elem, boolean doEndpoints) {
+  String buildItemXml(Document doc, Element elem, boolean doEndpoints) {
     StringBuilder thisSb = new StringBuilder();
-    getItemStart(elem, thisSb);
+    getItemStart(doc, elem, thisSb);
     thisSb.append("<type>").append(getType(elem)).append("</type>");
     thisSb.append("<max>").append(elem.attr("data-sw-max-length")).append("</max>");
     thisSb.append("<min>").append(elem.attr("data-sw-min-length")).append("</min>");
     thisSb.append("<max-value>").append(elem.attr("data-sw-max-value")).append("</max-value>");
     thisSb.append("<min-value>").append(elem.attr("data-sw-min-value")).append("</min-value>");
+    thisSb.append("<mask-err>").append(elem.attr("data-sw-mask-err")).append("</mask-err>");
     thisSb.append("<msg>").append(elem.attr("data-sw-err-msg")).append("</msg>");
 
     String format = elem.attr("data-sw-format");
@@ -166,14 +187,24 @@ public class GenerateXml {
     return thisSb.toString();
   }
 
-  private void getItemStart(Element elem, StringBuilder sb) {
+  private void getItemStart(Document doc, Element elem, StringBuilder sb) {
     sb.append("<item>");
-
     String name = elem.attr("name");
     if (name.length() == 0) {
-      name = elem.attr("id");
+      name = elem.attr("name");
     }
     sb.append("<name>").append(name).append("</name>");
+    String display = elem.attr("data-sw-display");
+    if((display == null || display.length() == 0) && name.length() > 0) {
+      Element e = doc.select("[for=\"" + name + "\"]").first();
+      if(e == null ) {
+        display = name;
+      }
+      else {
+        display = e.html();
+      }
+    }
+    sb.append("<display>").append(display).append("</display>");
   }
 
   private String getType(Element elem) {
@@ -198,7 +229,7 @@ public class GenerateXml {
 
     for (Element elem : elems) {
       if (elem.attr(DATA_SW_TYPE).length() == 0) {
-        getItemStart(elem, thisSb);
+        getItemStart(doc, elem, thisSb);
         Elements subElems = elem.select(subElement);
         boolean foundFirst = false;
         for (Element subElem : subElems) {
@@ -220,14 +251,14 @@ public class GenerateXml {
     File file = new File(sanwafFile);
     String contents = readFile(new FileInputStream(file));
 
-    int start = contents.indexOf(SANWAF_FILE_PLACEHOLDER_START);
+    int start = contents.indexOf(providedPlaceholderStart);
     if (start > 0) {
-      int end = contents.indexOf(SANWAF_FILE_PLACEHOLDER_END);
+      int end = contents.indexOf(providedPlaceholderEnd);
       if (end > start) {
         if (appendToFile) {
           contents = contents.substring(0, end) + "\n" + sb.toString() + "\n" + contents.substring(end, contents.length());
         } else {
-          contents = contents.substring(0, start + SANWAF_FILE_PLACEHOLDER_START.length()) + "\n" + sb.toString() + "\n" + contents.substring(end, contents.length());
+          contents = contents.substring(0, start + providedPlaceholderStart.length()) + "\n" + sb.toString() + "\n" + contents.substring(end, contents.length());
         }
         writeFile(contents);
       }
@@ -282,6 +313,8 @@ public class GenerateXml {
     String append = getParm(args, "--append:");
     String strict = getParm(args, "--strict:");
     String out = getParm(args, "--output");
+    String startPos = getParm(args, "--placeholder-start");
+    String endPos = getParm(args, "--placeholder-end");
 
     List<String> extensions = Arrays.asList(exts.split(","));
     boolean doEndpoints = Boolean.parseBoolean(endpoints);
@@ -298,7 +331,7 @@ public class GenerateXml {
     }
 
     try {
-      GenerateXml o = new GenerateXml(rootpath, extensions, doEndpoints, doNonSanwaf, sanwafFile, appendToFile, strict);
+      GenerateXml o = new GenerateXml(rootpath, extensions, doEndpoints, doNonSanwaf, sanwafFile, appendToFile, strict, startPos, endPos);
       String s = o.process();
       if (doOutput) {
         logger.log(Level.INFO, s);
@@ -329,7 +362,7 @@ public class GenerateXml {
       StringBuilder sb = new StringBuilder("\nSanwaf-ui-2-server Generate XML Usage");
       sb.append("\n-------------------------------------");
       sb.append("\n\nCall Format:");
-      sb.append("\n\tjava -cp \"./*\" com.sanwaf.util.GenerateXml [path] [extensions] [file] [append] [output] [nonSanwaf] [endpoints] [strict]");
+      sb.append("\n\tjava -cp \"./*\" com.sanwaf.util.GenerateXml [path] [extensions] [file] [append] [output] [nonSanwaf] [endpoints] [strict] [placeholder-start] [placeholder-end]");
       sb.append("\n\nwhere (order of parameters not relevant):");
 
       sb.append("\n\t[path]\t\tThe root path from where to start recursively scanning for files to parse");
@@ -363,6 +396,18 @@ public class GenerateXml {
       sb.append("\n\t[strict]\tFlag to include 'strict' attribute in output (only for doEndpoints)");
       sb.append("\n\t\t\tFormat:\t\t--strict:<true/false(default)/less>");
       sb.append("\n\t\t\tExample:\t--strict:less");
+
+      sb.append("\n\t[placeholder-start]\tUnidque string identifier used as the start position in the sanwaf.xml file. placeholder-end indicates end position");
+      sb.append("\n\t                   \tValue must be in a valid xml comment format: <!--YOUR-STRING--> as the start & end markers are not replaced/removed");
+      sb.append("\n\t                   \tIf not provided, the value defaults to: " + SANWAF_FILE_PLACEHOLDER_START);
+      sb.append("\n\t\t\tFormat:\t\t--placeholder-start:<unique-string-indicating-start-position>");
+      sb.append("\n\t\t\tExample:\t--placeholder-start:<!--~~endpoints-start-pos~~~-->");
+
+      sb.append("\n\t[placeholder-end]\tUnidque string identifier used as the end position in the sanwaf.xml file. string must be in a valid xml comment format: <!--YOUR-STRING-->");
+      sb.append("\n\t                 \tValue must be in a valid xml comment format: <!--YOUR-STRING--> as the start & end markers are not replaced/removed");
+      sb.append("\n\t                 \tIf not provided, the value defaults to: " + SANWAF_FILE_PLACEHOLDER_END);
+      sb.append("\n\t\t\tFormat:\t\t--placeholder-end:<unique-string-indicating-end-position>");
+      sb.append("\n\t\t\tExample:\t--placeholder-end:<!--~~endpoints-end-pos~~~-->");
 
       sb.append("\n\n\tNote: When \"--file\" is specified, the file contents must include the following markers to place to generated XML:");
       sb.append("\n\t\tStart Marker: " + SANWAF_FILE_PLACEHOLDER_START);
