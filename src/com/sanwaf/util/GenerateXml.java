@@ -61,7 +61,6 @@ public class GenerateXml {
     if(this.providedPlaceholderEnd == null || this.providedPlaceholderEnd.length() == 0) {
       this.providedPlaceholderEnd = SANWAF_FILE_PLACEHOLDER_END;
     }
-    
   }
 
   public String process() throws IOException {
@@ -196,12 +195,15 @@ public class GenerateXml {
     sb.append("<name>").append(name).append("</name>");
     String display = elem.attr("data-sw-display");
     if((display == null || display.length() == 0) && name.length() > 0) {
-      Element e = doc.select("[for=\"" + name + "\"]").first();
-      if(e == null ) {
-        display = name;
+      display = name;
+      try {
+        Element e = doc.select("[for=\"" + name + "\"]").first();
+        if(e != null ) {
+          display = e.html();
+        }
       }
-      else {
-        display = e.html();
+      catch(Exception e) {
+        //ignore
       }
     }
     sb.append("<display>").append(display).append("</display>");
@@ -362,7 +364,7 @@ public class GenerateXml {
       StringBuilder sb = new StringBuilder("\nSanwaf-ui-2-server Generate XML Usage");
       sb.append("\n-------------------------------------");
       sb.append("\n\nCall Format:");
-      sb.append("\n\tjava -cp \"./*\" com.sanwaf.util.GenerateXml [path] [extensions] [file] [append] [output] [nonSanwaf] [endpoints] [strict] [placeholder-start] [placeholder-end]");
+      sb.append("\n\tjava -cp \"./*\" com.sanwaf.util.GenerateXml [path] [extensions] [file] [append] [output] [nonSanwaf] [endpoints] [strict] [xml-start] [xml-end]");
       sb.append("\n\nwhere (order of parameters not relevant):");
 
       sb.append("\n\t[path]\t\tThe root path from where to start recursively scanning for files to parse");
@@ -370,7 +372,7 @@ public class GenerateXml {
       sb.append("\n\t\t\tExample:\t--path:/path/to/files/\n");
 
       sb.append("\n\t[extensions]\tComma separated list of file extension to search for");
-      sb.append("\n\t\t\tFormat:\t--extensions:<list,of,extensions>");
+      sb.append("\n\t\t\tFormat:\t\t--extensions:<list,of,extensions>");
       sb.append("\n\t\t\tExample:\t--extensions:.html,.jsp\n");
 
       sb.append("\n\t[file]\t\tFully pathed filename to place outputs into");
@@ -395,24 +397,20 @@ public class GenerateXml {
 
       sb.append("\n\t[strict]\tFlag to include 'strict' attribute in output (only for doEndpoints)");
       sb.append("\n\t\t\tFormat:\t\t--strict:<true/false(default)/less>");
-      sb.append("\n\t\t\tExample:\t--strict:less");
+      sb.append("\n\t\t\tExample:\t--strict:less\n");
 
-      sb.append("\n\t[placeholder-start]\tUnidque string identifier used as the start position in the sanwaf.xml file. placeholder-end indicates end position");
-      sb.append("\n\t                   \tValue must be in a valid xml comment format: <!--YOUR-STRING--> as the start & end markers are not replaced/removed");
-      sb.append("\n\t                   \tIf not provided, the value defaults to: " + SANWAF_FILE_PLACEHOLDER_START);
+      sb.append("\n\t[xml-start]\tUnique string identifier used as the start position in the sanwaf.xml file.");
+      sb.append("\n\t           \t  xml-start & xml-end indicate where in the xml file to place the results of the operation");
+      sb.append("\n\t           \t  xml-start must be in a valid xml comment format: <!--YOUR-STRING--> as the start & end markers are not replaced/removed");
+      sb.append("\n\t           \t  If not provided, the value defaults to: " + SANWAF_FILE_PLACEHOLDER_START);
       sb.append("\n\t\t\tFormat:\t\t--placeholder-start:<unique-string-indicating-start-position>");
-      sb.append("\n\t\t\tExample:\t--placeholder-start:<!--~~endpoints-start-pos~~~-->");
+      sb.append("\n\t\t\tExample:\t--placeholder-start:<!--~~endpoints-start-pos~~~-->\n");
 
-      sb.append("\n\t[placeholder-end]\tUnidque string identifier used as the end position in the sanwaf.xml file. string must be in a valid xml comment format: <!--YOUR-STRING-->");
-      sb.append("\n\t                 \tValue must be in a valid xml comment format: <!--YOUR-STRING--> as the start & end markers are not replaced/removed");
-      sb.append("\n\t                 \tIf not provided, the value defaults to: " + SANWAF_FILE_PLACEHOLDER_END);
-      sb.append("\n\t\t\tFormat:\t\t--placeholder-end:<unique-string-indicating-end-position>");
-      sb.append("\n\t\t\tExample:\t--placeholder-end:<!--~~endpoints-end-pos~~~-->");
-
-      sb.append("\n\n\tNote: When \"--file\" is specified, the file contents must include the following markers to place to generated XML:");
-      sb.append("\n\t\tStart Marker: " + SANWAF_FILE_PLACEHOLDER_START);
-      sb.append("\n\t\tEnd Marker:   " + SANWAF_FILE_PLACEHOLDER_END);
-      sb.append("\n\n\tAs the Sanwaf.xml file contains many sections, this controls where the output is placed");
+      sb.append("\n\t[xml-end]\tUnique string identifier used as the end position in the sanwaf.xml file.");
+      sb.append("\n\t         \t  See above xml-start instructions");
+      sb.append("\n\t           \tIf not provided, the value defaults to: " + SANWAF_FILE_PLACEHOLDER_START);
+      sb.append("\n\t\t\tFormat:\t\t--placeholder-start:<unique-string-indicating-start-position>");
+      sb.append("\n\t\t\tExample:\t--xml-end:<!--~~endpoints-end-pos~~~-->");
 
       logger.log(Level.INFO, sb.toString());
     }
