@@ -28,6 +28,8 @@
        - Dynamically disable Browser Validation and run against Server (uses embedded Jetty)
 
 # SanWaf-UI-2-Server
+Sanwaf-ui-2-server Generate XML Usage
+-------------------------------------
 
 Sanwaf-UI-2-Server is a utility that allows you to configure Sanwaf-Server using the Sanwaf-UI attributes added to web pages.  That is, you only have to run the utility to update the server configuration so that it will perform the same validation on the server as it did on the UI.
 
@@ -40,7 +42,7 @@ To run the Sanwaf-UI-2-Server utility:
 3. Copy the sanwaf-ui-2-server.jar file from the target folder to a location on your build server
 4. run the following command:
 
-       java -jar sanwaf-ui-2-server.jar [path] [extensions] [file] [append] [output] [nonSanwaf] [endpoints] [strict]
+      	java -cp "./*" com.sanwaf.util.GenerateXml [path] [extensions] [file] [html5] [append] [output] [nonSanwaf] [endpoints] [strict] [xml-start] [xml-end]
 
        where (order of parameters not relevant):
         
@@ -64,6 +66,10 @@ To run the Sanwaf-UI-2-Server utility:
               Format:  --append:<true/false(default)>
               Example: --append:true
 
+          [html5]	Flag to specify whether to process HTML5 attributes
+			           Format:		--html5:<true/false(default)>
+			           Example:	--html5:true
+
           [output]
               Flag to specify to output XML to console
               Format:  --output:<true/false(default)>
@@ -84,8 +90,21 @@ To run the Sanwaf-UI-2-Server utility:
               Format:  --strict:<true/false(default)/less>
               Example: --strict:less
 
-          Note: When "--file" is specified, the file contents must include the following markers to place to generated XML:
-            Start Marker: <!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-START~~~ -->
-            End Marker:   <!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-END~~~ -->
+          [xml-start]	Unique string identifier used as the start position in the sanwaf.xml file.
+	           	 xml-start & xml-end indicate where in the xml file to place the results of the operation
+	           	 xml-start must be in a valid xml comment format: <!--YOUR-STRING--> as the start & end markers are not replaced/removed
+	           	 If not provided, the value defaults to: <!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-START~~~ -->
+			           Format:		--placeholder-start:<unique-string-indicating-start-position>
+			           Example:	--placeholder-start:<!--~~endpoints-start-pos~~~-->
 
-          As the Sanwaf.xml file contains many sections, this controls where the output is placed
+	         [xml-end]	Unique string identifier used as the end position in the sanwaf.xml file.
+	         	   See above xml-start instructions
+	           	 If not provided, the value defaults to: <!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-START~~~ -->
+			           Format:		--placeholder-start:<unique-string-indicating-start-position>
+			           Example:	--xml-end:<!--~~endpoints-end-pos~~~-->
+ 
+          Note: When "--file" is specified, the file contents must include the following markers to place to generated XML:
+            Start Marker: <!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-START~~~ --> OR the value specified in the --placeholder-start parameter
+            End Marker:   <!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-END~~~ -->   OR the value specified in the --placeholder-end parameter
+
+            As the Sanwaf.xml file contains many sections, this controls where the output is placed
