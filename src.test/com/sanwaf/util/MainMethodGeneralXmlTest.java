@@ -2,30 +2,18 @@ package com.sanwaf.util;
 
 import org.junit.Test;
 import org.junit.After;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.runners.MethodSorters;
 
-import static org.junit.Assert.assertTrue;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.List;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MainMethodGeneralXmlTest {
-  private final ByteArrayOutputStream outContent = new ByteArrayOutputStream();
-  private final PrintStream originalOut = System.out;
-
   static final String TEST_BUILD_PATH = "test-build-path";
   static String rootPath = new File(GenerateXml.class.getClassLoader().getResource("").getFile() + TEST_BUILD_PATH).toString();
   static String sanwafFilePath = new File(GenerateXml.class.getClassLoader().getResource("").getFile() + TEST_BUILD_PATH + "/sanwaf.xml").toString();

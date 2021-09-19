@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Attributes;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -34,22 +35,24 @@ public class GenerateXml {
   private String strict = "";
   private String sanwafFile = "";
   private boolean appendToFile = false;
+  private boolean html5 = false;
   private String providedPlaceholderStart = null;
   private String providedPlaceholderEnd = null;
   private FileFilter fileFilter = null;
   private StringBuilder sb = new StringBuilder();
 
   GenerateXml(String rootPath, List<String> extensions, boolean doEndpoints, boolean doNonAnnotated, String sanwafFile, boolean appendToFile, String strict) {
-    this(rootPath, extensions, doEndpoints, doNonAnnotated, sanwafFile, appendToFile, strict, "", "");
+    this(rootPath, extensions, doEndpoints, doNonAnnotated, sanwafFile, appendToFile, false, strict, "", "");
   }
 
-  GenerateXml(String rootPath, List<String> extensions, boolean doEndpoints, boolean doNonAnnotated, String sanwafFile, boolean appendToFile, String strict, String providedPlaceholderStart,
+  GenerateXml(String rootPath, List<String> extensions, boolean doEndpoints, boolean doNonAnnotated, String sanwafFile, boolean appendToFile, boolean html5, String strict, String providedPlaceholderStart,
       String providedPlaceholderEnd) {
     this.rootPath = formatPath(rootPath, false, true);
     this.doEndpoints = doEndpoints;
     this.doNonAnnotated = doNonAnnotated;
     this.sanwafFile = sanwafFile;
     this.appendToFile = appendToFile;
+    this.html5 = html5;
     this.strict = strict;
     this.providedPlaceholderStart = providedPlaceholderStart;
     this.providedPlaceholderEnd = providedPlaceholderEnd;
@@ -111,25 +114,21 @@ public class GenerateXml {
     Document doc = Jsoup.parse(file, "UTF-8");
     Elements forms = doc.select("form");
     if (forms.size() == 0) {
-      // nothing to do, skip it
       return;
     }
     StringBuilder sbThis = new StringBuilder();
-
     for (Element form : forms) {
       String action = form.attr("action");
-
       if (action == null || action.length() == 0) {
         // TODO: pull from attribute or page
 
+        
       }
 
       Document formdoc = Jsoup.parse(form.toString());
-
       if (doEndpoints) {
         sbThis.append("<endpoint>\n");
         sbThis.append("<uri>").append(action).append("</uri>\n");
-
         if (strict != null && strict.length() > 0 && (TRUE.equalsIgnoreCase(strict) || FALSE.equalsIgnoreCase(strict) || LESS_THAN.equals(strict) || LESS.equalsIgnoreCase(strict))) {
           sbThis.append("<strict>").append(strict.toLowerCase()).append("</strict>\n");
         }
@@ -137,9 +136,11 @@ public class GenerateXml {
       }
 
       boolean addedElements = false;
-      for (Element elem : formdoc.getElementsByAttribute(DATA_SW_TYPE)) {
-        sbThis.append(buildItemXml(formdoc, elem, doEndpoints)).append("\n");
-        addedElements = true;
+      if(html5) {
+        addedElements = parseSanwafAttributes(sbThis, formdoc, "type", addedElements);
+      }
+      else {
+        addedElements = parseSanwafAttributes(sbThis, formdoc, DATA_SW_TYPE, addedElements);
       }
 
       if (doNonAnnotated) {
@@ -160,53 +161,99 @@ public class GenerateXml {
     }
   }
 
-  String buildItemXml(Document doc, Element elem, boolean doEndpoints) {
-    StringBuilder thisSb = new StringBuilder();
-    getItemStart(doc, elem, thisSb);
-    thisSb.append("<type>").append(getType(elem)).append("</type>");
-    thisSb.append("<max>").append(elem.attr("data-sw-max-length")).append("</max>");
-    thisSb.append("<min>").append(elem.attr("data-sw-min-length")).append("</min>");
-    thisSb.append("<max-value>").append(elem.attr("data-sw-max-value")).append("</max-value>");
-    thisSb.append("<min-value>").append(elem.attr("data-sw-min-value")).append("</min-value>");
-    thisSb.append("<mask-err>").append(elem.attr("data-sw-mask-err")).append("</mask-err>");
-    thisSb.append("<msg>").append(elem.attr("data-sw-err-msg")).append("</msg>");
-
-    String format = elem.attr("data-sw-format");
-    if (format.length() == 0) {
-      format = elem.attr("data-sw-fixed-format");
-    }
-    thisSb.append("<format>").append(format).append("</format>");
-
-    if (doEndpoints) {
-      thisSb.append("<req>").append(elem.attr("data-sw-required")).append("</req>");
-      thisSb.append("<related>").append(elem.attr("data-sw-related")).append("</related>");
+  private boolean parseSanwafAttributes(StringBuilder sbThis, Document formdoc, String byAttType, boolean addedElements) {
+    for (Element elem : formdoc.getElementsByAttribute(byAttType)) {
+      Atts atts = getAtts(formdoc, elem);
+      if(atts.hasSignificantAttsForXml()) {
+        sbThis.append(buildItemXmlFromAtts(formdoc, atts, doEndpoints)).append("\n");
+        addedElements = true;
+      }
     }
 
-    thisSb.append("</item>");
-    return thisSb.toString();
+    if (doNonAnnotated) {
+      String s = getAllOptionSelectAsConstants(formdoc, "select", "option", "value");
+      if (s.length() > 0) {
+        sbThis.append(s);
+        addedElements = true;
+      }
+    }
+    return addedElements;
   }
 
-  private void getItemStart(Document doc, Element elem, StringBuilder sb) {
-    sb.append("<item>");
-    String name = elem.attr("name");
-    if (name.length() == 0) {
-      name = elem.attr("name");
+  private String getAttrValue(Element e, String sanwafAtt, String html5Att, String def) {
+    String s = e.attr(sanwafAtt);
+    if(s != null && s.length() > 0) {
+      return s;
     }
-    sb.append("<name>").append(name).append("</name>");
-    String display = elem.attr("data-sw-display");
-    if((display == null || display.length() == 0) && name.length() > 0) {
-      display = name;
-      try {
-        Element e = doc.select("[for=\"" + name + "\"]").first();
-        if(e != null ) {
-          display = e.html();
+    if(html5) {
+      if(html5Att.length() > 0) {
+        s = e.attr(html5Att);
+        if((s == null || s.length() == 0) && html5Att.equalsIgnoreCase("required")) {
+          Attributes attributes = e.attributes();
+          return  "" + attributes.hasKey("required");
         }
       }
-      catch(Exception e) {
-        //ignore
+    }
+    return def;
+  }
+  
+  private Atts getAtts(Document doc, Element elem) {
+    Atts atts = new Atts();
+    atts.name = elem.attr("name");
+    if (atts.name.length() == 0) {
+      atts.name = elem.attr("id");
+    }
+
+    atts.display = elem.attr("data-sw-display");
+    if((atts.display == null || atts.display.length() == 0) && atts.name.length() > 0) {
+      atts.display = atts.name;
+      try {
+        Element e = doc.select("[for=\"" + atts.name + "\"]").first();
+        if(e != null ) {
+          atts.display = e.html();
+        }
+      }
+      catch(Exception e) { }
+    }
+    
+    atts.type = getType(elem);
+    atts.maxLength = getAttrValue(elem, "data-sw-max-length", "maxlength", "");
+    atts.minLength = getAttrValue(elem, "data-sw-min-length", "minlength", "");
+    atts.maxValue = getAttrValue(elem, "data-sw-max-value", "max", "");
+    atts.minValue = getAttrValue(elem, "data-sw-min-value", "min", "");
+    atts.errMsg = getAttrValue(elem, "data-sw-err-msg", "", ""); 
+    atts.maskErr = getAttrValue(elem, "data-sw-mask-err", "", "");
+    atts.required = getAttrValue(elem, "data-sw-required", "required", "");
+    atts.related = getAttrValue(elem, "data-sw-related", "", "");
+    if(atts.type.length() == 0) {
+      if(atts.maxValue.length() > 0 || atts.minValue.length() > 0) {
+        atts.type = "n";
+      }
+      else if(atts.maxLength.length() > 0 || atts.minLength.length() > 0 || atts.required.length() > 0) {
+        atts.type = "s";
       }
     }
-    sb.append("<display>").append(display).append("</display>");
+    return atts;
+  }
+
+  String buildItemXmlFromAtts(Document doc, Atts atts, boolean doEndpoints) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("<item>");
+    sb.append("<name>").append(atts.name).append("</name>");
+    sb.append("<display>").append(atts.display).append("</display>");
+    sb.append("<type>").append(atts.type).append("</type>");
+    sb.append("<max>").append(atts.maxLength).append("</max>");
+    sb.append("<min>").append(atts.minLength).append("</min>");
+    sb.append("<max-value>").append(atts.maxValue).append("</max-value>");
+    sb.append("<min-value>").append(atts.minValue).append("</min-value>");
+    sb.append("<mask-err>").append(atts.maskErr).append("</mask-err>");
+    sb.append("<msg>").append(atts.errMsg).append("</msg>");
+    if (doEndpoints) {
+      sb.append("<req>").append(atts.required).append("</req>");
+      sb.append("<related>").append(atts.related).append("</related>");
+    }
+    sb.append("</item>");
+    return sb.toString();
   }
 
   private String getType(Element elem) {
@@ -219,6 +266,22 @@ public class GenerateXml {
       } catch (PatternSyntaxException pse) {
         LOGGER.severe("ERROR: element: " + elem.id() + ", unable to compile regex pattern: " + regex + ", using type 's' instead.");
         return "";
+      }
+    }
+    if(type == null || type.length() == 0) {
+      if(html5) {
+        if(elem.attr("type").equalsIgnoreCase("email")) {
+          type = "x{[^@\\s]+@[^@\\s]+\\.[^@\\s]+}";
+        } else if (elem.attr("type").equalsIgnoreCase("url")) {
+          type = "x{https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)}";
+        } else if (elem.attr("type").equalsIgnoreCase("tel")) {
+          type = "x{\\(?(\\d{3})\\)?[-\\.\\s]?(\\d{3})[-\\.\\s]?(\\d{4})}";
+        } else if (elem.attr("type").equalsIgnoreCase("number")) {
+          type = "n";
+        }
+        if (elem.attr("pattern").length() > 0) {
+          type = "x{" + elem.attr("pattern") + "}";
+        }
       }
     }
     return type;
@@ -247,6 +310,29 @@ public class GenerateXml {
       }
     }
     return thisSb.toString();
+  }
+
+  private void getItemStart(Document doc, Element elem, StringBuilder sb) {
+    sb.append("<item>");
+    String name = elem.attr("name");
+    if (name.length() == 0) {
+      name = elem.attr("name");
+    }
+    sb.append("<name>").append(name).append("</name>");
+    String display = elem.attr("data-sw-display");
+    if((display == null || display.length() == 0) && name.length() > 0) {
+      display = name;
+      try {
+        Element e = doc.select("[for=\"" + name + "\"]").first();
+        if(e != null ) {
+          display = e.html();
+        }
+      }
+      catch(Exception e) {
+        //ignore
+      }
+    }
+    sb.append("<display>").append(display).append("</display>");
   }
 
   private void updateSanwafFile() throws IOException {
@@ -284,6 +370,8 @@ public class GenerateXml {
       }
       sb.append(new String(data));
       data = new byte[1024];
+      //TODO: cleanup end nulls 
+      
     }
     is.close();
     return sb.toString();
@@ -312,6 +400,7 @@ public class GenerateXml {
     String endpoints = getParm(args, "--endpoints:");
     String nonSanwaf = getParm(args, "--nonSanwaf:");
     String sanwafFile = getParm(args, "--file:");
+    String html5String = getParm(args, "--html5:");
     String append = getParm(args, "--append:");
     String strict = getParm(args, "--strict:");
     String out = getParm(args, "--output");
@@ -322,6 +411,7 @@ public class GenerateXml {
     boolean doEndpoints = Boolean.parseBoolean(endpoints);
     boolean doNonSanwaf = Boolean.parseBoolean(nonSanwaf);
     boolean appendToFile = Boolean.parseBoolean(append);
+    boolean html5 = Boolean.parseBoolean(html5String);
     boolean doOutput = Boolean.parseBoolean(out);
     if (!(strict.equalsIgnoreCase(TRUE) || strict.equalsIgnoreCase(FALSE) || strict.equalsIgnoreCase(LESS) || strict.equalsIgnoreCase(LESS_THAN))) {
       strict = FALSE;
@@ -333,7 +423,7 @@ public class GenerateXml {
     }
 
     try {
-      GenerateXml o = new GenerateXml(rootpath, extensions, doEndpoints, doNonSanwaf, sanwafFile, appendToFile, strict, startPos, endPos);
+      GenerateXml o = new GenerateXml(rootpath, extensions, doEndpoints, doNonSanwaf, sanwafFile, appendToFile, html5, strict, startPos, endPos);
       String s = o.process();
       if (doOutput) {
         logger.log(Level.INFO, s);
@@ -364,7 +454,7 @@ public class GenerateXml {
       StringBuilder sb = new StringBuilder("\nSanwaf-ui-2-server Generate XML Usage");
       sb.append("\n-------------------------------------");
       sb.append("\n\nCall Format:");
-      sb.append("\n\tjava -cp \"./*\" com.sanwaf.util.GenerateXml [path] [extensions] [file] [append] [output] [nonSanwaf] [endpoints] [strict] [xml-start] [xml-end]");
+      sb.append("\n\tjava -cp \"./*\" com.sanwaf.util.GenerateXml [path] [extensions] [file] [html5] [append] [output] [nonSanwaf] [endpoints] [strict] [xml-start] [xml-end]");
       sb.append("\n\nwhere (order of parameters not relevant):");
 
       sb.append("\n\t[path]\t\tThe root path from where to start recursively scanning for files to parse");
@@ -382,6 +472,10 @@ public class GenerateXml {
       sb.append("\n\t[append]\tFlag to specify whether to append or override file");
       sb.append("\n\t\t\tFormat:\t\t--append:<true/false(default)>");
       sb.append("\n\t\t\tExample:\t--append:true\n");
+
+      sb.append("\n\t[html5]\tFlag to specify whether to process HTML5 attributes");
+      sb.append("\n\t\t\tFormat:\t\t--html5:<true/false(default)>");
+      sb.append("\n\t\t\tExample:\t--html5:true\n");
 
       sb.append("\n\t[output]\tFlag to specify to output XML to console");
       sb.append("\n\t\t\tFormat:\t\t--output:<true/false(default)>");
@@ -416,4 +510,29 @@ public class GenerateXml {
     }
   }
 
+}
+
+class Atts{
+  String name = "";
+  String display = "";
+  String type = "";
+  String required = "false";
+  String minLength = "";
+  String maxLength = "";
+  String minValue = "";
+  String maxValue = "";
+  String maskErr = "";
+  String errMsg = "";
+  String related = "";
+  public boolean hasSignificantAttsForXml() {
+    if(minLength.length() > 0 || maxLength.length() > 0 || minValue.length() > 0 || maxValue.length() > 0 || maskErr.length() > 0 || errMsg.length() > 0 || related.length() > 0) {
+      return true;
+    }
+    
+    if(type.equals("s") && !required.equalsIgnoreCase("true")) {
+        return false;
+    }
+    
+    return true;
+  }
 }
