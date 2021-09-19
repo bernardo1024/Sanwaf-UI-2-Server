@@ -68,8 +68,8 @@ To run the Sanwaf-UI-2-Server utility:
 
           [html5]
               Flag to specify whether to process HTML5 attributes
-	      Format:   --html5:<true/false(default)>
-	      Example:  --html5:true
+              Format:   --html5:<true/false(default)>
+              Example:  --html5:true
 
           [output]
               Flag to specify to output XML to console
@@ -92,19 +92,19 @@ To run the Sanwaf-UI-2-Server utility:
               Example: --strict:less
 
           [xml-start]
-	      Unique string identifier used as the start position in the sanwaf.xml file.
+              Unique string identifier used as the start position in the sanwaf.xml file.
               xml-start & xml-end indicate where in the xml file to place the results of the operation
-	      xml-start must be in a valid xml comment format: <!--YOUR-STRING--> as the start & end markers are not replaced/removed
-	      If not provided, the value defaults to: <!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-START~~~ -->
-	      Format:  --placeholder-start:<unique-string-indicating-start-position>
-	      Example: --placeholder-start:<!--~~endpoints-start-pos~~~-->
+              xml-start must be in a valid xml comment format: <!--YOUR-STRING--> as the start & end markers are not replaced/removed
+              If not provided, the value defaults to: <!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-START~~~ -->
+              Format:  --placeholder-start:<unique-string-indicating-start-position>
+              Example: --placeholder-start:<!--~~endpoints-start-pos~~~-->
 
           [xml-end]
-	      Unique string identifier used as the end position in the sanwaf.xml file.
-	      See above xml-start instructions
-	      If not provided, the value defaults to: <!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-START~~~ -->
-	      Format:  --placeholder-start:<unique-string-indicating-start-position>
-	      Example: --xml-end:<!--~~endpoints-end-pos~~~-->
+              Unique string identifier used as the end position in the sanwaf.xml file.
+              See above xml-start instructions
+              If not provided, the value defaults to: <!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-START~~~ -->
+              Format:  --placeholder-start:<unique-string-indicating-start-position>
+              Example: --xml-end:<!--~~endpoints-end-pos~~~-->
  
           Note: When "--file" is specified, the file contents must include the following markers to place to generated XML:
             Start Marker: <!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-START~~~ --> OR the value specified in the --placeholder-start parameter
