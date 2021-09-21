@@ -137,10 +137,10 @@ public class GenerateXml {
 
       boolean addedElements = false;
       if(html5) {
-        addedElements = parseSanwafAttributes(sbThis, formdoc, "type", addedElements);
+        addedElements = parseAttributes(sbThis, formdoc, "type", addedElements);
       }
       else {
-        addedElements = parseSanwafAttributes(sbThis, formdoc, DATA_SW_TYPE, addedElements);
+        addedElements = parseAttributes(sbThis, formdoc, DATA_SW_TYPE, addedElements);
       }
 
       if (doNonAnnotated) {
@@ -161,7 +161,7 @@ public class GenerateXml {
     }
   }
 
-  private boolean parseSanwafAttributes(StringBuilder sbThis, Document formdoc, String byAttType, boolean addedElements) {
+  private boolean parseAttributes(StringBuilder sbThis, Document formdoc, String byAttType, boolean addedElements) {
     for (Element elem : formdoc.getElementsByAttribute(byAttType)) {
       Atts atts = getAtts(formdoc, elem);
       if(atts.hasSignificantAttsForXml()) {
@@ -192,6 +192,7 @@ public class GenerateXml {
           Attributes attributes = e.attributes();
           return  "" + attributes.hasKey("required");
         }
+        return s;
       }
     }
     return def;
@@ -233,6 +234,10 @@ public class GenerateXml {
         atts.type = "s";
       }
     }
+    
+    if(html5 && atts.type.equals("o") && atts.maskErr.length() == 0) {
+      atts.maskErr = "****";
+    }
     return atts;
   }
 
@@ -270,14 +275,17 @@ public class GenerateXml {
     }
     if(type == null || type.length() == 0) {
       if(html5) {
-        if(elem.attr("type").equalsIgnoreCase("email")) {
+        String attType = elem.attr("type");
+        if(attType.equalsIgnoreCase("email")) {
           type = "x{[^@\\s]+@[^@\\s]+\\.[^@\\s]+}";
-        } else if (elem.attr("type").equalsIgnoreCase("url")) {
+        } else if (attType.equalsIgnoreCase("url")) {
           type = "x{https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)}";
-        } else if (elem.attr("type").equalsIgnoreCase("tel")) {
+        } else if (attType.equalsIgnoreCase("tel")) {
           type = "x{\\(?(\\d{3})\\)?[-\\.\\s]?(\\d{3})[-\\.\\s]?(\\d{4})}";
-        } else if (elem.attr("type").equalsIgnoreCase("number")) {
+        } else if (attType.equalsIgnoreCase("number")) {
           type = "n";
+        } else if (attType.equalsIgnoreCase("password")) {
+          type = "o";
         }
         if (elem.attr("pattern").length() > 0) {
           type = "x{" + elem.attr("pattern") + "}";
@@ -534,5 +542,21 @@ class Atts{
     }
     
     return true;
+  }
+  
+  public String toString(){
+    StringBuilder sb = new StringBuilder();
+    sb.append("\nname=").append(name);
+    sb.append("\ndisplay=").append(display);
+    sb.append("\ntype=").append(type);
+    sb.append("\nrequired=").append(required);
+    sb.append("\nminLength=").append(minLength);
+    sb.append("\nmaxLength=").append(maxLength);
+    sb.append("\nminValue=").append(minValue);
+    sb.append("\nmaxValue=").append(maxValue);
+    sb.append("\nmaskErr=").append(maskErr);
+    sb.append("\nerrMsg=").append(errMsg);
+    sb.append("\nrelated=").append(related);
+    return sb.toString();
   }
 }
