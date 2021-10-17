@@ -45,7 +45,7 @@ To run the Sanwaf-UI-2-Server utility:
 
 5. run the following command:
 
-java -cp "./*" com.sanwaf.util.GenerateXml [path] [extensions] [file] [html5] [append] [output] [nonSanwaf] [endpoints] [strict] [placeholder-start] [placeholder-end]
+java -cp ./* com.sanwaf.util.GenerateXml [path] [extensions] [file] [html5] [append] [output] [nonSanwaf] [endpoints] [strict] [placeholder-start] [placeholder-end]
 
        where (order of parameters not relevant):
         
