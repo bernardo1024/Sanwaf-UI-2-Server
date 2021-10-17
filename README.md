@@ -41,7 +41,7 @@ To run the Sanwaf-UI-2-Server utility:
         
 3. Copy the sanwaf-ui-2-server.jar file from the target folder to a location on your build server
 
-4. Download the Jsoup library used by sanwaf-ui-2-server (save it to the same folder location as the sanwaf-ui-2-server.jar): https://jsoup.org/download
+4. Download the Jsoup library used by sanwaf-ui-2-server (save it to the same folder location as the sanwaf-ui-2-server.jar): https://jsoup.org/download (or from the root or this repos - see above)
 
 5. run the following command:
 
