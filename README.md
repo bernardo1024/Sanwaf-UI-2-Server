@@ -40,7 +40,10 @@ To run the Sanwaf-UI-2-Server utility:
        mvn install 
         
 3. Copy the sanwaf-ui-2-server.jar file from the target folder to a location on your build server
-4. run the following command:
+
+4. Download the Jsoup library used by sanwaf-ui-2-server (save it to the same folder location as the sanwaf-ui-2-server.jar): https://jsoup.org/download
+
+5. run the following command:
 
       	java -cp "./*" com.sanwaf.util.GenerateXml [path] [extensions] [file] [html5] [append] [output] [nonSanwaf] [endpoints] [strict] [xml-start] [xml-end]
 
