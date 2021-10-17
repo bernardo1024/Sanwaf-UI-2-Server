@@ -118,13 +118,11 @@ public class GenerateXml {
     }
     StringBuilder sbThis = new StringBuilder();
     for (Element form : forms) {
-      String action = form.attr("action");
-      if (action == null || action.length() == 0) {
-        // TODO: pull from attribute or page
-
-        
+      String action = form.attr("data-sw-actions");
+      if(action == null || action.length() == 0) {
+        action = form.attr("action");
       }
-
+      
       Document formdoc = Jsoup.parse(form.toString());
       if (doEndpoints) {
         sbThis.append("<endpoint>\n");
@@ -136,17 +134,10 @@ public class GenerateXml {
       }
 
       boolean addedElements = false;
+      addedElements = parseAttributes(sbThis, formdoc, DATA_SW_TYPE, addedElements);
       if(html5) {
-        addedElements = parseAttributes(sbThis, formdoc, "type", addedElements);
-      }
-      else {
-        addedElements = parseAttributes(sbThis, formdoc, DATA_SW_TYPE, addedElements);
-      }
-
-      if (doNonAnnotated) {
-        String s = getAllOptionSelectAsConstants(formdoc, "select", "option", "value");
-        if (s.length() > 0) {
-          sbThis.append(s);
+        boolean added = parseAttributes(sbThis, formdoc, "type", addedElements);
+        if(added) {
           addedElements = true;
         }
       }
@@ -162,7 +153,12 @@ public class GenerateXml {
   }
 
   private boolean parseAttributes(StringBuilder sbThis, Document formdoc, String byAttType, boolean addedElements) {
-    for (Element elem : formdoc.getElementsByAttribute(byAttType)) {
+    Elements elems = formdoc.select("[" + byAttType + "]");
+    for (Element elem : elems) {
+      if (!byAttType.equalsIgnoreCase(DATA_SW_TYPE) && elem.attr(DATA_SW_TYPE).length() > 0) {
+        continue;
+      }
+
       Atts atts = getAtts(formdoc, elem);
       if(atts.hasSignificantAttsForXml()) {
         sbThis.append(buildItemXmlFromAtts(formdoc, atts, doEndpoints)).append("\n");
@@ -171,6 +167,7 @@ public class GenerateXml {
     }
 
     if (doNonAnnotated) {
+      //TODO: include other types?
       String s = getAllOptionSelectAsConstants(formdoc, "select", "option", "value");
       if (s.length() > 0) {
         sbThis.append(s);
@@ -299,6 +296,7 @@ public class GenerateXml {
   private String getAllOptionSelectAsConstants(Document doc, String element, String subElement, String attribute) {
     StringBuilder thisSb = new StringBuilder();
     Elements elems = doc.select(element);
+    
 
     for (Element elem : elems) {
       if (elem.attr(DATA_SW_TYPE).length() == 0) {
@@ -363,7 +361,7 @@ public class GenerateXml {
 
   void writeFile(String data) throws IOException {
     try (BufferedWriter writer = new BufferedWriter(new FileWriter(sanwafFile))) {
-      writer.write(data);
+      writer.write(data.trim());
     }
   }
 
@@ -376,10 +374,8 @@ public class GenerateXml {
       if (read < 0) {
         break;
       }
-      sb.append(new String(data));
+      sb.append(new String(data).trim());
       data = new byte[1024];
-      //TODO: cleanup end nulls 
-      
     }
     is.close();
     return sb.toString();
@@ -399,12 +395,16 @@ public class GenerateXml {
    ******************************************************************************/
   public static void main(String[] args) {
     java.util.logging.Logger logger = java.util.logging.Logger.getLogger("GenerateXml");
-    if (args == null || args.length < 2 || args.length > 8) {
+    if (args == null || args.length < 2 || args.length > 11) {
       printUsage(logger);
       return;
     }
     String rootpath = getParm(args, "--path:");
     String exts = getParm(args, "--extensions:");
+    if(rootpath.length() == 0 || exts.length() == 0) {
+      printUsage(logger);
+      return;
+    }
     String endpoints = getParm(args, "--endpoints:");
     String nonSanwaf = getParm(args, "--nonSanwaf:");
     String sanwafFile = getParm(args, "--file:");
@@ -462,57 +462,58 @@ public class GenerateXml {
       StringBuilder sb = new StringBuilder("\nSanwaf-ui-2-server Generate XML Usage");
       sb.append("\n-------------------------------------");
       sb.append("\n\nCall Format:");
-      sb.append("\n\tjava -cp \"./*\" com.sanwaf.util.GenerateXml [path] [extensions] [file] [html5] [append] [output] [nonSanwaf] [endpoints] [strict] [xml-start] [xml-end]");
-      sb.append("\n\nwhere (order of parameters not relevant):");
+      sb.append("\njava -cp ./* com.sanwaf.util.GenerateXml [path] [extensions] [file] [html5] [append] [output] [nonSanwaf] [endpoints] [strict] [placeholder-start] [placeholder-end]");
+      sb.append("\n\nWhere (order of parameters not relevant):\n");
 
-      sb.append("\n\t[path]\t\tThe root path from where to start recursively scanning for files to parse");
-      sb.append("\n\t\t\tFormat:\t\t--path:<path>");
-      sb.append("\n\t\t\tExample:\t--path:/path/to/files/\n");
+      sb.append("\n\t[path]\t\t\tThe root path from where to start recursively scanning for files to parse (mandatory)");
+      sb.append("\n\t\t\t\tFormat:\t\t--path:<path>");
+      sb.append("\n\t\t\t\tExample:\t--path:/path/to/files/\n");
 
-      sb.append("\n\t[extensions]\tComma separated list of file extension to search for");
-      sb.append("\n\t\t\tFormat:\t\t--extensions:<list,of,extensions>");
-      sb.append("\n\t\t\tExample:\t--extensions:.html,.jsp\n");
+      sb.append("\n\t[extensions]\t\tComma separated list of file extension to search for (mandatory)");
+      sb.append("\n\t\t\t\tFormat:\t\t--extensions:<list,of,extensions>");
+      sb.append("\n\t\t\t\tExample:\t--extensions:.html,.jsp\n");
 
-      sb.append("\n\t[file]\t\tFully pathed filename to place outputs into");
-      sb.append("\n\t\t\tFormat:\t\t--file:<pathed filename>");
-      sb.append("\n\t\t\tExample:\t--file:/folder/sanwaf.xml\n");
+      sb.append("\n\t[file]\t\t\tFully pathed filename to place outputs into");
+      sb.append("\n\t\t\t\tFormat:\t\t--file:<pathed filename>");
+      sb.append("\n\t\t\t\tExample:\t--file:/folder/sanwaf.xml\n");
 
-      sb.append("\n\t[append]\tFlag to specify whether to append or override file");
-      sb.append("\n\t\t\tFormat:\t\t--append:<true/false(default)>");
-      sb.append("\n\t\t\tExample:\t--append:true\n");
+      sb.append("\n\t[append]\t\tFlag to specify whether to append or override file");
+      sb.append("\n\t\t\t\tFormat:\t\t--append:<true/false(default)>");
+      sb.append("\n\t\t\t\tExample:\t--append:true\n");
 
-      sb.append("\n\t[html5]\tFlag to specify whether to process HTML5 attributes");
-      sb.append("\n\t\t\tFormat:\t\t--html5:<true/false(default)>");
-      sb.append("\n\t\t\tExample:\t--html5:true\n");
+      sb.append("\n\t[html5]\t\t\tFlag to specify whether to process HTML5 attributes");
+      sb.append("\n\t\t\t\tFormat:\t\t--html5:<true/false(default)>");
+      sb.append("\n\t\t\t\tExample:\t--html5:true\n");
 
-      sb.append("\n\t[output]\tFlag to specify to output XML to console");
-      sb.append("\n\t\t\tFormat:\t\t--output:<true/false(default)>");
-      sb.append("\n\t\t\tExample:\t--output:true\n");
+      sb.append("\n\t[output]\t\tFlag to specify to output XML to console");
+      sb.append("\n\t\t\t\tFormat:\t\t--output:<true/false(default)>");
+      sb.append("\n\t\t\t\tExample:\t--output:true\n");
 
-      sb.append("\n\t[nonSanwaf]\tFlag to specify to include non sanwaf elements as constants");
-      sb.append("\n\t\t\tFormat:\t\t--nonSanwaf:<true/false(default)>");
-      sb.append("\n\t\t\tExample:\t--nonSanwaf:true\n");
+      sb.append("\n\t[nonSanwaf]\t\tFlag to specify to include non sanwaf elements as constants");
+      sb.append("\n\t\t\t\tFormat:\t\t--nonSanwaf:<true/false(default)>");
+      sb.append("\n\t\t\t\tExample:\t--nonSanwaf:true\n");
 
-      sb.append("\n\t[endpoints]\tFlag to specify to use endpoints format in output");
-      sb.append("\n\t\t\tFormat:\t\t--endpoints:<true/false(default)>");
-      sb.append("\n\t\t\tExample:\t--endpoints:true\n");
+      sb.append("\n\t[endpoints]\t\tFlag to specify to use endpoints format in output");
+      sb.append("\n\t\t\t\tFormat:\t\t--endpoints:<true/false(default)>");
+      sb.append("\n\t\t\t\tExample:\t--endpoints:true\n");
 
-      sb.append("\n\t[strict]\tFlag to include 'strict' attribute in output (only for doEndpoints)");
-      sb.append("\n\t\t\tFormat:\t\t--strict:<true/false(default)/less>");
-      sb.append("\n\t\t\tExample:\t--strict:less\n");
+      sb.append("\n\t[strict]\t\tFlag to include 'strict' attribute in output (only for doEndpoints)");
+      sb.append("\n\t\t\t\tFormat:\t\t--strict:<true/false(default)/less>");
+      sb.append("\n\t\t\t\tExample:\t--strict:less\n");
 
-      sb.append("\n\t[xml-start]\tUnique string identifier used as the start position in the sanwaf.xml file.");
-      sb.append("\n\t           \t  xml-start & xml-end indicate where in the xml file to place the results of the operation");
-      sb.append("\n\t           \t  xml-start must be in a valid xml comment format: <!--YOUR-STRING--> as the start & end markers are not replaced/removed");
-      sb.append("\n\t           \t  If not provided, the value defaults to: " + SANWAF_FILE_PLACEHOLDER_START);
-      sb.append("\n\t\t\tFormat:\t\t--placeholder-start:<unique-string-indicating-start-position>");
-      sb.append("\n\t\t\tExample:\t--placeholder-start:<!--~~endpoints-start-pos~~~-->\n");
+      sb.append("\n\t[placeholder-start]\tUnique string identifier used as the start position in the sanwaf.xml file to copy generated output");
+      sb.append("\n\t\t\t\tMust be in a valid xml comment format: <!--YOUR-STRING--> as the start & end markers are not replaced/removed");
+      sb.append("\n\t\t\t\tIf not provided, the value defaults to: " + SANWAF_FILE_PLACEHOLDER_START);
+      sb.append("\n\t\t\t\tFormat:\t\t--placeholder-start:\"<unique-string-indicating-start-position>\"");
+      sb.append("\n\t\t\t\tExample:\t--placeholder-start:\"<!--START-->\"\n");
 
-      sb.append("\n\t[xml-end]\tUnique string identifier used as the end position in the sanwaf.xml file.");
-      sb.append("\n\t         \t  See above xml-start instructions");
-      sb.append("\n\t           \tIf not provided, the value defaults to: " + SANWAF_FILE_PLACEHOLDER_START);
-      sb.append("\n\t\t\tFormat:\t\t--placeholder-start:<unique-string-indicating-start-position>");
-      sb.append("\n\t\t\tExample:\t--xml-end:<!--~~endpoints-end-pos~~~-->");
+      sb.append("\n\t[placeholder-end]\tUnique string identifier used as the end position in the sanwaf.xml file to copy generated output");
+      sb.append("\n\t\t\t\tMust be in a valid xml comment format: <!--YOUR-STRING--> as the start & end markers are not replaced/removed");
+      sb.append("\n\t\t\t\tIf not provided, the value defaults to: " + SANWAF_FILE_PLACEHOLDER_END);
+      sb.append("\n\t\t\t\tFormat:\t\t--placeholder-end:\"<unique-string-indicating-end-position>\"");
+      sb.append("\n\t\t\t\tExample:\t--placeholder-end:\"<!--END-->\"");
+
+      sb.append("\n\n\tNote: use quotes around parameters if they contain spaces.\n");
 
       logger.log(Level.INFO, sb.toString());
     }
