@@ -45,7 +45,7 @@ To run the Sanwaf-UI-2-Server utility:
 
 5. run the following command:
 
-      	java -cp "./*" com.sanwaf.util.GenerateXml [path] [extensions] [file] [html5] [append] [output] [nonSanwaf] [endpoints] [strict] [xml-start] [xml-end]
+java -cp "./*" com.sanwaf.util.GenerateXml [path] [extensions] [file] [html5] [append] [output] [nonSanwaf] [endpoints] [strict] [placeholder-start] [placeholder-end]
 
        where (order of parameters not relevant):
         
@@ -94,7 +94,7 @@ To run the Sanwaf-UI-2-Server utility:
               Format:  --strict:<true/false(default)/less>
               Example: --strict:less
 
-          [xml-start]
+          [placeholder-start]
               Unique string identifier used as the start position in the sanwaf.xml file.
               xml-start & xml-end indicate where in the xml file to place the results of the operation
               xml-start must be in a valid xml comment format: <!--YOUR-STRING--> as the start & end markers are not replaced/removed
@@ -102,7 +102,7 @@ To run the Sanwaf-UI-2-Server utility:
               Format:  --placeholder-start:<unique-string-indicating-start-position>
               Example: --placeholder-start:<!--~~endpoints-start-pos~~~-->
 
-          [xml-end]
+          [placeholder-end]
               Unique string identifier used as the end position in the sanwaf.xml file.
               See above xml-start instructions
               If not provided, the value defaults to: <!-- ~~~SANWAF-UI-2-SERVER-PLACEHOLDER-START~~~ -->
