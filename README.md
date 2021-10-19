@@ -27,7 +27,7 @@
        - Dynamically configure and test Sanwaf-UI 
        - Dynamically disable Browser Validation and run against Server (uses embedded Jetty)
 
-# SanWaf-UI-2-Server
+# Sanwaf-UI-2-Server
 Sanwaf-ui-2-server Generate XML Usage
 -------------------------------------
 
