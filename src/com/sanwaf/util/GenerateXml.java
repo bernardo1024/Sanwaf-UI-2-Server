@@ -469,7 +469,7 @@ public class GenerateXml {
       sb.append("\n\t\t\t\tFormat:\t\t--path:<path>");
       sb.append("\n\t\t\t\tExample:\t--path:/path/to/files/\n");
 
-      sb.append("\n\t[extensions]\t\tComma separated list of file extension to search for (mandatory)");
+      sb.append("\n\t[extensions]\t\tComma separated list of file extensions to search for (mandatory)");
       sb.append("\n\t\t\t\tFormat:\t\t--extensions:<list,of,extensions>");
       sb.append("\n\t\t\t\tExample:\t--extensions:.html,.jsp\n");
 
@@ -489,7 +489,7 @@ public class GenerateXml {
       sb.append("\n\t\t\t\tFormat:\t\t--output:<true/false(default)>");
       sb.append("\n\t\t\t\tExample:\t--output:true\n");
 
-      sb.append("\n\t[nonSanwaf]\t\tFlag to specify to include non sanwaf elements as constants");
+      sb.append("\n\t[nonSanwaf]\t\tFlag to specify to include non sanwaf elements as constants (select's)");
       sb.append("\n\t\t\t\tFormat:\t\t--nonSanwaf:<true/false(default)>");
       sb.append("\n\t\t\t\tExample:\t--nonSanwaf:true\n");
 
